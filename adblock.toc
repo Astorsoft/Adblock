@@ -1,0 +1,10 @@
+## Interface: 80300
+## Title: AdBlock
+## Author: Astor
+## Version: 0.1
+
+## X-Category: Chat/Communication
+## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+## SavedVariables: ADBLOCK_LOG, ADBLOCK_COUNTER, ADBLOCK_BLACKLIST, ADBLOCK_OPTIONS
+
+adblock.lua
