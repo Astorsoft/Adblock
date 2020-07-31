@@ -2,7 +2,7 @@
 ## Title: AdBlock
 ## Author: Astor
 ## Version: 0.1
-
+## Notes: Let's get rid of spammers with WoW's Adblocker!
 ## X-Category: Chat/Communication
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
 ## SavedVariables: ADBLOCK_LOG, ADBLOCK_COUNTER, ADBLOCK_BLACKLIST, ADBLOCK_OPTIONS
