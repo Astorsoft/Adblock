@@ -164,6 +164,7 @@ local function tradeSpamFilter(self, event, msg, author, _, channelName, _, _, c
     -- Test message
     if msg:find("adblock:tartanpion") then 
         if verbose then print("Blocked message from " .. author .. " for reason: Tartanpion") end
+        if debug then print("|cffFF0000".. msg .."|r ") end
         sessionBlockCounter = sessionBlockCounter + 1
         ADBLOCK_COUNTER = ADBLOCK_COUNTER + 1
         return true
@@ -173,6 +174,7 @@ local function tradeSpamFilter(self, event, msg, author, _, channelName, _, _, c
     -- user is part of blacklist and is automatically blocked
     if ADBLOCK_BLACKLIST[author] then 
         if verbose then print("Blocked message from " .. author .. " for reason: Blacklisted") end
+        if debug then print("|cffFF0000".. msg .."|r ") end
         ADBLOCK_COUNTER = ADBLOCK_COUNTER + 1
         sessionBlockCounter = sessionBlockCounter + 1
         return true
@@ -193,7 +195,8 @@ local function tradeSpamFilter(self, event, msg, author, _, channelName, _, _, c
             if msg:find(selling_action) then
                 for j, selling_object in ipairs(blocklist_selling_objects) do
                     if msg:find(selling_object) then -- very likely to be a advertisement message, proactively blocking it
-                        if debug then print("Matching action:" .. selling_action .. " Matching object: " .. selling_object .. " for message: " .. msg) end
+                        if debug then print("Matching action:" .. selling_action .. " Matching object: " .. selling_object) end
+                        if debug then print("|cffFF0000".. msg .."|r ") end
                         if verbose then print("Proactive adblock triggered for player " .. author) end
                         ADBLOCK_COUNTER = ADBLOCK_COUNTER + 1
                         sessionBlockCounter = sessionBlockCounter + 1
@@ -219,7 +222,7 @@ local function tradeSpamFilter(self, event, msg, author, _, channelName, _, _, c
         ADBLOCK_LOG[hash] = currTick
 
         tempBlock(author) -- Automatic blocking management
-
+        if debug then print("|cffFF0000".. msg .."|r ") end
         return true
     else
         ADBLOCK_LOG[hash] = currTick
