@@ -3,13 +3,13 @@ local AB = select(2, ...)
 -- Copied with pride from Addon Badboy, kuddos to Funkydude!
 AB.homographs = {
     --Symbol & weird space removal
-    ["[%*%-<>%(%)\"!%?=`'_%+#%%%^&;:~{}%[%]]"]="",
+    ["[%*%-<>%(%)\"!%?=`'_%#%%%^&;:~{}%[%]]"]="",
     ["¨"]="", ["”"]="", ["“"]="", ["▄"]="", ["▀"]="", ["█"]="", ["▓"]="", ["▲"]="", ["◄"]="", ["►"]="", ["▼"]="", ["♣"]="",
     ["░"]="", ["♥"]="", ["♫"]="", ["●"]="", ["■"]="", ["☼"]="", ["¤"]="", ["☺"]="", ["↑"]="", ["«"]="", ["»"]="", ["♦"]="",
     ["▌"]="", ["▒"]="", ["□"]="", ["¬"]="", ["√"]="", ["²"]="", ["´"]="", ["☻"]="", ["★"]="", ["☆"]="", ["◙"]="", ["◘"]="",
     ["¦"]="", ["|"]="", [";"]="", ["΅"]="", ["™"]="", ["。"]="", ["◆"]="", ["◇"]="", ["♠"]="", ["△"]="", ["¯"]="",
     ["《"]="", ["》"]="", ["（"]="", ["）"]="", ["～"]="", ["—"]="", ["！"]="", ["："]="", ["·"]="", ["˙"]="", ["…"]="", ["　"]="",
-    ["▎"]="", ["▍"]="", ["▂"]="", ["▅"]="", ["▆"]="", ["＋"]="", ["‘"]="", ["’"]="", ["【"]="", ["】"]="", ["│"]="",
+    ["▎"]="", ["▍"]="", ["▂"]="", ["▅"]="", ["▆"]="", ["‘"]="", ["’"]="", ["【"]="", ["】"]="", ["│"]="",
     
     --This is the replacement table. It serves to deobfuscate words by replacing letters with their English "equivalents".
     ["а"]="a", ["à"]="a", ["á"]="a", ["ä"]="a", ["â"]="a", ["ã"]="a", ["å"]="a", -- First letter is Russian "\208\176". Convert > \97.
@@ -85,8 +85,9 @@ function AB.C(text, color)
 end
 
 function AB.Highlight(msg, highlights, prevcolor)
+
     for i, keyword in ipairs(highlights) do
-        msg = msg:gsub(keyword, "|cFFFF0000%1|r")
+        msg = msg:gsub(AB.EscapePatterns(keyword), "|cFFFF0000%1|r")
     end
     if prevcolor then
         msg = msg:gsub("|r", "|cFF" .. AB.COLOR_CODES[prevcolor])
@@ -94,6 +95,12 @@ function AB.Highlight(msg, highlights, prevcolor)
     return msg
 end
 
+
+function AB.EscapePatterns(text)
+    local quotepattern = '(['..("%^$().[]*+-?"):gsub("(.)", "%%%1")..'])'
+    
+     return text:gsub(quotepattern, "%%%1")
+end
 
 function AB.GetFullName(name)
     local player = AB.capitalize(name)
@@ -206,8 +213,7 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
             end
         else
             AdBlock:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " ..  AB.C("First time", "pink"))
-            AdBlock.db.profile.antispam.last_seen[hash] = curr_tick
-            return false        
+            AdBlock.db.profile.antispam.last_seen[hash] = curr_tick       
         end
     end
     
@@ -219,12 +225,13 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
         for k,v in next, AB.homographs do -- canonizing message
             cleaned_msg = string.gsub(cleaned_msg, k, v)
         end
-        if AdBlock:Heuristics(cleaned_msg) then
+        local is_ad, match = AdBlock:Heuristics(cleaned_msg)
+        if is_ad then
             if AdBlock.db.profile.audit then
-                AdBlock:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising")
+                AdBlock:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
                 return false
             else
-                AdBlock:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising")
+                AdBlock:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
                 AdBlock:AddStrikes(player)
                 AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
                 AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Advertising", channel = (channelID or event)})

@@ -197,13 +197,20 @@ local options = {
                     fontSize = "medium",
                     order = 1
                 },
+                reset = {
+                    name = "Restore defaults",
+                    desc = "Revert back to the default configuration",
+                    type = "execute",
+                    order = 2,
+                    func = "RestoreHeuristicKeywords"
+                },
                 selling_actions = {
                     name = "Selling Action keywords",
                     desc = "Keywords to detect as an intent to sell",
                     type = "input",
                     multiline = true,
-                    width = "double",
-                    order = 2,
+                    width = "full",
+                    order = 3,
                     get = "GetActionKeywords",
                     set = "SetActionKeywords",
                     pattern = "([^,]+)",
@@ -214,8 +221,8 @@ local options = {
                     desc = "Keywords to detect as an object/service being sold",
                     type = "input",
                     multiline = true,
-                    width = "double",
-                    order = 2,
+                    width = "full",
+                    order = 4,
                     get = "GetObjectKeywords",
                     set = "SetObjectKeywords",
                     pattern = "([^,]+)",
@@ -346,8 +353,8 @@ local defaults = {
       autoblock = false,
       proactive = {
           enabled = true,
-          selling_actions = {"sell", "wts", "gallywix", "discount", "sylvanas", "oblivion", "nova", "community", "free"},
-          selling_objects = {"boost", "m+", "mythic+", "vision", "lvlup", "lvling", "levelup", "leveling", "aotc", "ce", "key", "curve", "cutting edge", "15+", "+15", "in time"}
+          selling_actions = {"sell", "wts", "gallywix", "discount", "sylvanas", "oblivion", "nova", "community", "free", "price"},
+          selling_objects = {"boost", "m+", "mythic", "vision", "lvlup", "lvling", "levelup", "leveling", "aotc", " ce", "key", "curve", "cutting edge", "15+", "+15", "in time"}
       },
       antispam = {
           enabled = true,
@@ -708,7 +715,7 @@ function AdBlock:Heuristics(msg)
                 if msg:find(selling_object) then -- very likely to be a advertisement message, proactively blocking it
                     local debug_msg = AB.Highlight(msg, {selling_action, selling_object}, "grey")
                     self:PrintDebug(AB.C(debug_msg, "grey"))
-                    return true
+                    return true, {action = selling_action, object = selling_object}
                 end
             end
         end
@@ -837,3 +844,7 @@ end
 
 
 
+function AdBlock:RestoreHeuristicKeywords()
+    self.db.profile.proactive.selling_actions = defaults.profile.proactive.selling_actions
+    self.db.profile.proactive.selling_objects = defaults.profile.proactive.selling_objects
+end
