@@ -41,6 +41,13 @@ local options = {
             order = 2,
             func = "GetStats",
         },
+        tutorial = {
+            name = "Show the tutorial again",
+            desc = "Show the introduction message once more",
+            type = "execute",
+            order = 2,
+            func = "ShowTutorial",
+        },
         autoblock = {
             name = "Auto-Blacklist",
             desc = "Automatically blacklist repeated offenders",
@@ -384,6 +391,7 @@ function AdBlock:OnInitialize()
     -- Called when the addon is loaded
     self.db = LibStub("AceDB-3.0"):New("AdblockDB", defaults, true)
     options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+    self.ui = LibStub("AceGUI-3.0")
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("AdBlock", options)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("AdBlock", "AdBlock")
@@ -393,7 +401,9 @@ function AdBlock:OnInitialize()
     -- TODO: Add DB cleaning
     self:PrintInfo("Type /ab to access the config or /ab stats to see how many Ads and Spam Adblock spared you.")
 
-    -- Get friendlist and guildies to whitelist them
+    if self.db.global.tutorial then
+        self:ShowTutorial()
+    end
     
 end
 
@@ -758,6 +768,71 @@ function AdBlock:PurgeHistory(info)
     self.db.char.history.counter = 0
 end
 
+function AdBlock:ShowTutorial(info)
+    self.db.global.tutorial = false
+    local frame = self.ui:Create("Frame")
+    frame:SetTitle("Welcome to AdBlock!")
+    frame:SetStatusText("AdBlock tutorial")
+    frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
+    frame:SetLayout("List")
+
+    local intro = self.ui:Create("Label")
+    intro:SetText([[
+World of Warcraft is turning like the rest of the internet, full of Boosting messages in chat, whispers, LFG tool, etc. As Blizzard is not doing anything about it, let's filter the clutter ourselves!
+        
+        ]])
+    intro:SetWidth(600)
+    intro:SetFont("Fonts\\FRIZQT__.TTF", 12)
+
+    frame:AddChild(intro)
+    local features_header = self.ui:Create("Label")
+    features_header:SetText("Current features:\n")
+    features_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
+
+    features_header:SetWidth(600)
+    frame:AddChild(features_header)
+    local features = self.ui:Create("Label")
+    features:SetText([[
+    * Block Spam: Automatically block messages sent more than once from the same user within defined timeframe (default to 5 min) in General Chat/Trade/Say/Yell/Whisper
+    * Block Ads aka Proactive mode: Aggressively blocks obvious boosting messages from the first occurence
+    * Blacklist users to be permanently filtered out of your chat
+    * Whitelist users to always be allowed (automatically done for friends and guildies)
+    * Audit mode: Try out AdBlock to see what it would block without actually blocking anything
+    * Autoblock mode: adds to the permanent blocklist repeating offenders
+    * Show how many messages were blocked this session/overall
+        
+        ]])
+    features:SetFont("Fonts\\FRIZQT__.TTF", 12)
+    features:SetWidth(600)
+    frame:AddChild(features)
+
+    local usage_header = self.ui:Create("Label")
+    usage_header:SetText("Recommended usage:\n")
+    usage_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
+    usage_header:SetWidth(600)
+    frame:AddChild(usage_header)
+    local usage = self.ui:Create("Label")
+    usage:SetText([[
+    * Type /ab and start fine-tuning the AdBlock to your taste
+    * Start in Audit to make sure it would not block messages you would like to keep
+    * Remove Audit and switch to Verbose to see when messages are being blocked until you feel confident about the addon, you can see blocked message history at any time through /ab history show
+
+You can go further and activate proactive mode (/ab proactive) so that obvious advertisement messages are also blocked directly from the first message, it is tuned to remove all the BOOST offers while keeping regular WTS or WTB request for items/mounts, guild announces etc. You can configure the keywords Adblock triggers on in the settings
+    
+Finally, you can activate auto-blacklist to Blacklist players that repeatedly trigger Adblock to be sure you'll never hear from them again
+    
+    ]])
+    usage:SetFont("Fonts\\FRIZQT__.TTF", 12)
+
+    usage:SetWidth(600)
+    frame:AddChild(usage)
+
+    local button = self.ui:Create("Button")
+    button:SetText("Ok, show me the options!")
+    button:SetWidth(200)
+    button:SetCallback("OnClick", function()  InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); AdBlock.ui:Release(frame)  end)
+    frame:AddChild(button)
+end
 
 
 
