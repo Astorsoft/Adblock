@@ -383,11 +383,7 @@ local defaults = {
     char = {
         pals = {},
         sync_timer = nil,
-        history = {
-            index = {},
-            counter = 0,
-            log = {}
-        }
+        history = {}
     },
     global = {
         tutorial = true,
@@ -738,18 +734,19 @@ function AdBlock:AddStrikes(player)
 end
 
 function AdBlock:ShowHistory(info)
-    local i = 1
-    for k, v in pairs(self.db.char.history.log) do
-        self:Print("---------- " .. "Entry " .. i .. " blocked for reason: " .. v.reason)
+-- buffer[1] contains the newest item
+-- buffer[#buffer] contains the oldest item.
+-- To iterate in insertion order:
+    for index = #self.db.char.history, 1, -1 do
+        local v = self.db.char.history[index]
+        self:Print("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason)
         print("[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:")
         print(AB.C(v.msg, "white"))
-        i = i + 1
     end
 end
 
 function AdBlock:AddToHistory(entry)
     if self.db.profile.history.enabled then
-        local entry_index = 1 + (self.db.char.history.counter % self.db.profile.history.size)
         if entry.channel == 1 then entry.channel = "General" end
         if entry.channel == 2 then entry.channel = "Trade" end
         if entry.channel == 3 then entry.channel = "Defense" end
@@ -757,22 +754,14 @@ function AdBlock:AddToHistory(entry)
         if entry.channel == "CHAT_MSG_YELL" then entry.channel = "Yell" end
         if entry.channel == "CHAT_MSG_WHISPER" then entry.channel = "Whisper" end
 
-        self.db.char.history.counter = self.db.char.history.counter + 1
-        -- trick to get a rolling log while not cluttering the log with duplicates
-        local old_entry =  self.db.char.history.index[entry_index]
-        if old_entry then
-            self.db.char.history.log[entry.hash] = nil
-        end
-        self.db.char.history.log[entry.hash] = entry
-        self.db.char.history.index[entry_index] = entry.hash
-        self:PrintDebug("Adding entry " .. AB.C(entry.hash, "teal") .. " at index " .. AB.C(entry_index, "teal"))
+        table.insert(self.db.char.history, 1, entry)
+        self.db.char.history[self.db.profile.history.size + 1] = nil
+        self:PrintDebug("Adding entry " .. AB.C(entry.hash, "teal") .. " in history log")
     end
 end
 
 function AdBlock:PurgeHistory(info)
-    self.db.char.history.log = {}
-    self.db.char.history.index = {}
-    self.db.char.history.counter = 0
+    self.db.char.history = {}
 end
 
 function AdBlock:ShowTutorial(info)
