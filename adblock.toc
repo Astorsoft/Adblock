@@ -1,7 +1,7 @@
 ## Interface: 80300
 ## Title: Ad|cFFFF8000Block|r |TInterface\AddOns\AdBlock\Textures\Logo:24:24|t
 ## Author: Astor
-## Version: 0.4
+## Version: 0.5
 ## Notes: Let's get rid of spammers with WoW's Adblocker!
 ## X-Category: Chat/Communication
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
