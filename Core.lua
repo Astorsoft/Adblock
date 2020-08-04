@@ -288,7 +288,7 @@ local options = {
                     softMax = 100,
                     max = 500,
                     bigStep = 10,
-                    set = function(info, val) AdBlock.db.profile.history.size = val end,
+                    set = "ChangeHistorySize",
                     get = function(info) return AdBlock.db.profile.history.size end
                 },
                 purge = {
@@ -573,10 +573,51 @@ function AdBlock:GetBlacklistSortedKeys(info)
 end
 
 function AdBlock:ShowBlacklist(info)
-    self:Print("Blacklist:")
+    local count = 0
+    local bl_text = ""
+    local blacklisted_users = {}
     for k, v in pairs(self.db.profile.blacklist) do
-        print(AB.C(v.name, "red") .. " (" .. v.origin .. ")")
+        table.insert(blacklisted_users, k)
     end
+    table.sort(blacklisted_users)
+    for k, v in pairs(blacklisted_users) do
+        player = self.db.profile.blacklist[v]
+        bl_text = bl_text .. AB.C(player.name, "red") .. " (" .. player.origin .. ")\n"
+        count = count + 1
+    end
+
+    if info.uiType == "cmd" then
+        self:Print("Blacklist:")
+        print(bl_text)
+        
+        if count then
+            self:Print(AB.C(count, "teal") .. " players found.")
+        else
+            self:Print("List is empty!")
+        end
+    else -- GUI
+        AB.blacklist_frame = self.ui:Create("Frame")
+        AB.blacklist_frame:SetTitle("AdBlock - Blacklisted users")
+        AB.blacklist_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
+        AB.blacklist_frame:SetLayout("List")
+        local button = self.ui:Create("Button")
+        button:SetText("Refresh")
+        button:SetWidth(200)
+        local list_widget = self.ui:Create("MultiLineEditBox")
+
+        list_widget:SetText(bl_text)
+        list_widget:SetRelativeWidth(1)
+        list_widget:SetLabel("Blacklisted users: " .. count)
+        list_widget:SetFullHeight(true)
+        list_widget:DisableButton(true)
+        list_widget:SetNumLines(27)
+        list_widget:SetFocus()
+        AB.blacklist_frame:AddChild(list_widget)
+
+        button:SetCallback("OnClick", function(widget) AdBlock.ui:Release(AB.blacklist_frame); AdBlock:ShowBlacklist({uiType = "dialog"}) end)
+        AB.blacklist_frame:AddChild(button)
+    end
+    
 end
 
 function AdBlock:PurgeBlacklist(info)
@@ -630,17 +671,100 @@ function AdBlock:GetWhitelistSortedKeys(info)
 end
 
 function AdBlock:ShowWhitelist(info)
-    self:Print("Whitelist:")
+    local count = 0
+    local wl_text = ""
+    local whitelisted_users = {}
     for k, v in pairs(self.db.profile.whitelist) do
-        print(AB.C(v.name, "green"))
+        table.insert(whitelisted_users, k)
     end
+    table.sort(whitelisted_users)
+    for k, v in pairs(whitelisted_users) do
+        player = self.db.profile.whitelist[v]
+        wl_text = wl_text .. AB.C(player.name, "green") .. " (" .. player.origin .. ")\n"
+        count = count + 1
+    end
+
+    if info.uiType == "cmd" then
+        self:Print("Whitelist:")
+        print(wl_text)
+        
+        if count then
+            self:Print(AB.C(count, "teal") .. " players found.")
+        else
+            self:Print("List is empty!")
+        end
+    else -- GUI
+        AB.whitelist_frame = self.ui:Create("Frame")
+        AB.whitelist_frame:SetTitle("AdBlock - Whitelisted users")
+        AB.whitelist_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
+        AB.whitelist_frame:SetLayout("List")
+        local button = self.ui:Create("Button")
+        button:SetText("Refresh")
+        button:SetWidth(200)
+        local list_widget = self.ui:Create("MultiLineEditBox")
+
+        list_widget:SetText(wl_text)
+        list_widget:SetRelativeWidth(1)
+        list_widget:SetLabel("Whitelisted users: " .. count)
+        list_widget:SetFullHeight(true)
+        list_widget:DisableButton(true)
+        list_widget:SetNumLines(27)
+        list_widget:SetFocus()
+        AB.whitelist_frame:AddChild(list_widget)
+
+        button:SetCallback("OnClick", function(widget) AdBlock.ui:Release(AB.whitelist_frame); AdBlock:ShowWhitelist({uiType = "dialog"}) end)
+        AB.whitelist_frame:AddChild(button)
+    end
+    
 end
 
 function AdBlock:ShowPals(info)
-    self:Print("List of pals (friends & guildies):")
+    local count = 0
+    local pals_text = ""
+    local pals_users = {}
     for k, v in pairs(self.db.char.pals) do
-        print(AB.C(v.name, "teal") .. " (" .. v.origin .. ")")
+        table.insert(pals_users, k)
     end
+    table.sort(pals_users)
+    for k, v in pairs(pals_users) do
+        player = self.db.char.pals[v]
+        pals_text = pals_text .. AB.C(player.name, "teal") .. " (" .. player.origin .. ")\n"
+        count = count + 1
+    end
+
+    if info.uiType == "cmd" then
+        self:Print("Pals list:")
+        print(pals_text)
+        
+        if count then
+            self:Print(AB.C(count, "teal") .. " players found.")
+        else
+            self:Print("List is empty!")
+        end
+    else -- GUI
+        AB.pals_frame = self.ui:Create("Frame")
+        AB.pals_frame:SetTitle("AdBlock - List of pals (friends and guildies)")
+        AB.pals_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
+        AB.pals_frame:SetLayout("List")
+        local button = self.ui:Create("Button")
+        button:SetText("Refresh")
+        button:SetWidth(200)
+        local list_widget = self.ui:Create("MultiLineEditBox")
+
+        list_widget:SetText(pals_text)
+        list_widget:SetRelativeWidth(1)
+        list_widget:SetLabel("Pals in total: " .. count)
+        list_widget:SetFullHeight(true)
+        list_widget:DisableButton(true)
+        list_widget:SetNumLines(27)
+        list_widget:SetFocus()
+        AB.pals_frame:AddChild(list_widget)
+
+        button:SetCallback("OnClick", function(widget) AdBlock.ui:Release(AB.pals_frame); AdBlock:SyncPals(); AdBlock:ShowPals({uiType = "dialog"}) end)
+        AB.pals_frame:AddChild(button)
+    end
+
+
 end
 
 function AdBlock:PurgeWhitelist(info)
@@ -733,15 +857,53 @@ function AdBlock:AddStrikes(player)
     end
 end
 
+
+function AdBlock:GetHistoryText()
+    local history_text = ""
+    for index = 1, #self.db.char.history do
+        local v = self.db.char.history[index]
+        history_text = history_text .. AB.C("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason .. "\n", "red")
+        history_text = history_text .. "[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:"
+        history_text = history_text .. AB.C(v.msg, "white") .. "\n\n"
+    end
+    return history_text
+end
+
 function AdBlock:ShowHistory(info)
 -- buffer[1] contains the newest item
 -- buffer[#buffer] contains the oldest item.
 -- To iterate in insertion order:
-    for index = #self.db.char.history, 1, -1 do
-        local v = self.db.char.history[index]
-        self:Print("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason)
-        print("[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:")
-        print(AB.C(v.msg, "white"))
+
+    if info.uiType == "cmd" then
+
+        for index = #self.db.char.history, 1, -1 do
+            local v = self.db.char.history[index]
+            self:Print("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason)
+            print("[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:")
+            print(AB.C(v.msg, "white"))
+        end
+    else
+        AB.history_frame = self.ui:Create("Frame")
+        AB.history_frame:SetTitle("AdBlock - Blocked Messages History")
+        AB.history_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
+        AB.history_frame:SetLayout("List")
+        local button = self.ui:Create("Button")
+        button:SetText("Refresh")
+        button:SetWidth(200)
+        local history_widget = self.ui:Create("MultiLineEditBox")
+        local history_text = self:GetHistoryText()
+
+        history_widget:SetText(history_text)
+        history_widget:SetRelativeWidth(1)
+        history_widget:SetLabel("Last " .. self.db.profile.history.size .. " blocked messages")
+        history_widget:SetFullHeight(true)
+        history_widget:DisableButton(true)
+        history_widget:SetNumLines(27)
+        history_widget:SetFocus()
+        AB.history_frame:AddChild(history_widget)
+
+        button:SetCallback("OnClick", function(widget) AdBlock.ui:Release(AB.history_frame); AdBlock:ShowHistory({uiType = "dialog"}) end)
+        AB.history_frame:AddChild(button)
     end
 end
 
@@ -777,7 +939,7 @@ function AdBlock:ShowTutorial(info)
 World of Warcraft is turning like the rest of the internet, full of Boosting messages in chat, whispers, LFG tool, etc. As Blizzard is not doing anything about it, let's filter the clutter ourselves!
         
         ]])
-    intro:SetWidth(600)
+    intro:SetRelativeWidth(1)
     intro:SetFont("Fonts\\FRIZQT__.TTF", 12)
 
     frame:AddChild(intro)
@@ -785,7 +947,7 @@ World of Warcraft is turning like the rest of the internet, full of Boosting mes
     features_header:SetText("Current features:\n")
     features_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
 
-    features_header:SetWidth(600)
+    features_header:SetRelativeWidth(1)
     frame:AddChild(features_header)
     local features = self.ui:Create("Label")
     features:SetText([[
@@ -799,13 +961,13 @@ World of Warcraft is turning like the rest of the internet, full of Boosting mes
         
         ]])
     features:SetFont("Fonts\\FRIZQT__.TTF", 12)
-    features:SetWidth(600)
+    features:SetRelativeWidth(1)
     frame:AddChild(features)
 
     local usage_header = self.ui:Create("Label")
     usage_header:SetText("Recommended usage:\n")
     usage_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
-    usage_header:SetWidth(600)
+    usage_header:SetRelativeWidth(1)
     frame:AddChild(usage_header)
     local usage = self.ui:Create("Label")
     usage:SetText([[
@@ -820,12 +982,12 @@ Finally, you can activate auto-blacklist to Blacklist players that repeatedly tr
     ]])
     usage:SetFont("Fonts\\FRIZQT__.TTF", 12)
 
-    usage:SetWidth(600)
+    usage:SetRelativeWidth(1)
     frame:AddChild(usage)
 
     local button = self.ui:Create("Button")
     button:SetText("Ok, show me the options!")
-    button:SetWidth(200)
+    button:SetRelativeWidth(1)
     button:SetCallback("OnClick", function()  InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); AdBlock.ui:Release(frame)  end)
     frame:AddChild(button)
 end
@@ -836,4 +998,14 @@ end
 function AdBlock:RestoreHeuristicKeywords()
     self.db.profile.proactive.selling_actions = defaults.profile.proactive.selling_actions
     self.db.profile.proactive.selling_objects = defaults.profile.proactive.selling_objects
+end
+
+function AdBlock:ChangeHistorySize(info, val)
+    local prev_size = AdBlock.db.profile.history.size
+    self.db.profile.history.size = val
+    if prev_size > val then
+        for i = val, prev_size do
+            self.db.char.history[i] = nil
+        end
+    end
 end
