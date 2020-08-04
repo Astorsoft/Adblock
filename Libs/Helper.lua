@@ -202,25 +202,24 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
                     return true
                 end
             else
-                AdBlock:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " ..  AB.C("First time", "pink"))
                 AdBlock.db.profile.antispam.last_seen[hash] = curr_tick
                 if AdBlock.db.profile.strikelist[player] then AdBlock.db.profile.strikelist[player] = 0 end -- reseting counter for well-behaved players
-                return false
             end
         else
+            AdBlock:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " ..  AB.C("First time", "pink"))
             AdBlock.db.profile.antispam.last_seen[hash] = curr_tick
+            return false        
         end
     end
     
     
     -- if message contains obvious selling advertisement it will be automatically blocked regardless of it had been seen or not before
     if AdBlock.db.profile.proactive.enabled then -- AdBlock Heuristic part
-        cleaned_msg = string.gsub(msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
-        cleaned_msg = string.lower(cleaned_msg)
+        cleaned_msg = string.lower(msg)
+        cleaned_msg = string.gsub(cleaned_msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
         for k,v in next, AB.homographs do -- canonizing message
             cleaned_msg = string.gsub(cleaned_msg, k, v)
         end
-
         if AdBlock:Heuristics(cleaned_msg) then
             if AdBlock.db.profile.audit then
                 AdBlock:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising")
