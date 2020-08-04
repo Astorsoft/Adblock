@@ -108,7 +108,6 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
         return true
     end
     AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
-    
 
     -- Ignore messages coming from outside General (1) trade (2), defense (3) or say/yell/whispe (0)
     if (channelID > 3) then 
@@ -136,16 +135,29 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
         return false
     end
 
-    -- friends and guildies are automatically approved as well
-    for i, pal in ipairs(AdBlock.db.char.pals) do
-        if player == pal then
-            AdBlock:PrintDebug("Ignoring message, player " .. AB.C(player, "teal") .. " is a pal or yourself")
-            return false
-        end
-    end
-    
     local date = date()
     local hash = AB.stringHash(player .. ":" .. msg)
+
+        -- Test message
+    if msg:find("adblock:test") then
+        if AdBlock.db.profile.audit then
+            AdBlock:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: " ..AB.C("Adblock Test String", "pink"))
+            return false
+        else
+            AdBlock:PrintInfo("Blocked message from " .. AB.C(author, "teal") .. " for reason: " .. AB.C("Adblock Test String", "pink"))
+            local debug_msg = AB.Highlight(msg, {"adblock:test"}, "grey")
+            AdBlock:PrintDebug(AB.C(debug_msg, "grey"))
+            AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
+            AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Test", channel = (channelID or event)})
+            return true
+        end
+    end
+
+    -- friends and guildies are automatically approved as well
+    if AdBlock.db.char.pals[player] then 
+        AdBlock:PrintDebug("Ignoring message, player " .. AB.C(player, "teal") .. " is " .. AdBlock.db.char.pals[player].origin)
+        return false
+    end
 
     -- user is part of blacklist and is automatically blocked
     if AdBlock.db.profile.blacklist[player] then
@@ -161,20 +173,7 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
         end
     end
     
-    -- Test message
-    if msg:find("adblock:test") then
-        if AdBlock.db.profile.audit then
-            AdBlock:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: " ..AB.C("Adblock Test String", "pink"))
-            return false
-        else
-            AdBlock:PrintInfo("Blocked message from " .. AB.C(author, "teal") .. " for reason: " .. AB.C("Adblock Test String", "pink"))
-            local debug_msg = AB.Highlight(msg, {"adblock:test"}, "grey")
-            AdBlock:PrintDebug(AB.C(debug_msg, "grey"))
-            AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
-            AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Test", channel = (channelID or event)})
-            return true
-        end
-    end
+
 
     -- now managing the heavy duty cases
     

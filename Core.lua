@@ -368,7 +368,7 @@ function AdBlock:SyncPals()
     if nb_friends then
         for i = 1, nb_friends do
             player = AB.GetFullName(GetFriendInfo(i))  
-            table.insert(self.db.char.pals, player)
+            self.db.char.pals[player] = {name = player, origin = "a friend"}
             self:PrintDebug("Adding friend " .. AB.C(player, "teal"))
         end
     end
@@ -377,13 +377,13 @@ function AdBlock:SyncPals()
         if nb_friends then
             for i = 1, nb_friends do
                 player = AB.GetFullName(GetGuildRosterInfo(i))
-                table.insert(self.db.char.pals, player)
+                self.db.char.pals[player] = {name = player, origin = "a guildie"}
                 self:PrintDebug("Adding guildie " .. AB.C(player, "teal"))
             end
         end
     end
     player, _ = AB.GetFullName(UnitName("player"))
-    table.insert(self.db.char.pals, player)
+    self.db.char.pals[player] = {name = player, origin = "yourself"}
     self:PrintDebug("Adding current player " .. AB.C(player, "teal"))
 end
 
@@ -421,6 +421,10 @@ end
 function AdBlock:PLAYER_LOGOUT(...)
     self.db.profile.global_counter = self.db.profile.global_counter + self.db.profile.session_counter
     self.db.profile.session_counter = 0
+    if self.db.char.sync_timer then
+        self:CancelTimer(self.db.char.sync_timer)
+        self.db.char.sync_timer = nil
+    end
 end
 
 function AdBlock:ChatCommand(input)
@@ -585,7 +589,7 @@ end
 function AdBlock:ShowPals(info)
     self:Print("List of pals (friends & guildies):")
     for k, v in pairs(self.db.char.pals) do
-        print(AB.C(v, "teal"))
+        print(AB.C(v.name, "teal") .. "(" .. v.origin .. ")")
     end
 end
 
