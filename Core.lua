@@ -414,10 +414,10 @@ end
 function AdBlock:SyncPals()
     self.db.char.pals = {}
     local player
-    local nb_friends = GetNumFriends()
+    local nb_friends = C_FriendList.GetNumFriends()
     if nb_friends then
         for i = 1, nb_friends do
-            player = AB.GetFullName(GetFriendInfo(i))  
+            player = AB.GetFullName(C_FriendList.GetFriendInfoByIndex(i).name)  
             self.db.char.pals[player] = {name = player, origin = "a friend"}
             self:PrintDebug("Adding friend " .. AB.C(player, "teal"))
         end
