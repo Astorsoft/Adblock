@@ -305,8 +305,8 @@ local defaults = {
       autoblock = false,
       proactive = {
           enabled = true,
-          selling_actions = {"boost", "sell", "wts", "gallywix", "discount", "sylvanas", "oblivion", "nova", "community", "free"},
-          selling_objects = {"m+", "mythic+", "vision", "mythic +", "aotc", "ce", "key", "curve", "cutting edge", "15+", "+15", "in time"}
+          selling_actions = {"sell", "wts", "gallywix", "discount", "sylvanas", "oblivion", "nova", "community", "free"},
+          selling_objects = {"boost", "m+", "mythic+", "vision", "lvlup", "lvling", "levelup", "leveling", "aotc", "ce", "key", "curve", "cutting edge", "15+", "+15", "in time"}
       },
       antispam = {
           enabled = true,
@@ -485,7 +485,7 @@ end
 
 function AdBlock:SetActionKeywords(info, val)
     self.db.profile.proactive.selling_actions = {}
-    for keyword in val:gmatch('[^,%s]+') do
+    for keyword in val:gmatch('[^,]+') do
         table.insert(self.db.profile.proactive.selling_actions, keyword)
     end
 end
@@ -497,7 +497,7 @@ end
 
 function AdBlock:SetObjectKeywords(info, val)
     self.db.profile.proactive.selling_objects = {}
-    for keyword in val:gmatch('[^,%s]+') do
+    for keyword in val:gmatch('[^,]+') do
         table.insert(self.db.profile.proactive.selling_objects, keyword)
     end
 end
