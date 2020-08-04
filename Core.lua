@@ -8,42 +8,74 @@ local options = {
     handler = AdBlock,
     type = 'group',
     args = {
+        header = {
+            name = "AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!",
+            type = "description",
+            image = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
+            imageWidth = 96,
+            imageHeight = 96,
+            fontSize = "medium",
+            order = 3
+        },
+
         help = {
             name = "Help",
             guiHidden = true,
             desc = "Show this help",
             type = "execute",
-            order = 0,
+            order = 1,
             func = "ShowHelp"
         },
         enable = {
             name = "Enable",
             desc = "Enables/Disables the addon",
             type = "toggle",
-            order = 1,
+            order = 2,
             set = "ToggleAddon",
             get = function(info) return AdBlock.db.profile.enabled end
         },
         stats = {
-            name = "Stats",
+            name = "Show AdBlock Stats",
             desc = "Show how many ads or spam were blocked thanks to AdBlock",
             type = "execute",
-            order = 100,
+            order = 2,
             func = "GetStats",
         },
         autoblock = {
             name = "Auto-Blacklist",
             desc = "Automatically blacklist repeated offenders",
             type = "toggle",
-            order = 11,
+            order = 12,
             set = function(info, val) AdBlock:ToggleMode(info, val, "autoblock") end,
             get = function(info) return AdBlock.db.profile.autoblock end
+        },
+        Block_ads = {
+            name = "Block Ads",
+            desc = "Block detected ads using Adblock heuristics (while not in proactive, ads/spam are blocked at their second occurence)",
+            type = "toggle",
+            order = 11,
+            set = function(info, val) AdBlock:ToggleMode(info, val, "proactive") end,
+            get = function(info) return AdBlock.db.profile.proactive.enabled end
+        },
+        block_spam = {
+            name = "Block Spam",
+            desc = "When enabled, block message sent more than once over a specific timeframe",
+            type = "toggle",
+            order = 10,
+            set = function(info, val) AdBlock:ToggleMode(info, val, "antispam") end,
+            get = function(info) return AdBlock.db.profile.antispam.enabled end
         },
         blacklist = {
             name = "Blacklist",
             type = "group",
             order = 12,
             args = {
+                header = {
+                    name = "Add players that you want to always block, only applies to the channels you filter. \n\nIf you ticked \"Auto-Blacklist\", people that repeatedly Spam or send ads (more than 10 times) will automatically get added in your blacklist.",
+                    type = "description",
+                    order = 0,
+                    fontSize = "medium",
+                },
                 add = {
                     name = "Add",
                     desc = "Add player to permanent blacklist, you'll no longer see any message from them on channel where Adblock is active",
@@ -88,6 +120,12 @@ local options = {
             type = "group",
             order = 13,
             args = {
+                header = {
+                    name = "Add players you want to never be flagged as Spam or Advertisement.\n\nNo need to add friends or guildies, they will automatically be whitelisted as part of the \"Pals\"",
+                    type = "description",
+                    order = 0,
+                    fontSize = "medium",
+                },
                 add = {
                     name = "Add",
                     desc = "Add players to whitelist, you'll never block any message from them",
@@ -142,17 +180,15 @@ local options = {
             }
         },
         proactive = {
-            name = "Proactive",
+            name = "Ad-blocking keywords",
             type = "group",
             order = 14,
             args = {
-                enable = {
-                    name = "Enable",
-                    desc = "Block detected ads using Adblock heuristics (while not in proactive, ads/spam are blocked at their second occurence)",
-                    type = "toggle",
-                    order = 1,
-                    set = function(info, val) AdBlock:ToggleMode(info, val, "proactive") end,
-                    get = function(info) return AdBlock.db.profile.proactive.enabled end
+                description = {
+                    name = "Adblocking works like this: \n\nIf a message contains one of the \"Selling Action Keywords\" |cFFFF0000AND|r one of the \"Selling Object Keywords\", then it will be flagged as advertisement and blocked if you ticked \"Block ads\".\n\n This allows to block ads like \"WTS lvling boost\" while keeping trade messages like \"WTS Sky-Golem\".",
+                    type = "description",
+                    fontSize = "medium",
+                    order = 1
                 },
                 selling_actions = {
                     name = "Selling Action keywords",
@@ -186,13 +222,11 @@ local options = {
             type = 'group',
             order = 15,
             args = {
-                enable = {
-                    name = "Enable",
-                    desc = "When enabled, block message sent more than once over a specific timeframe",
-                    type = "toggle",
-                    order = 1,
-                    set = function(info, val) AdBlock:ToggleMode(info, val, "antispam") end,
-                    get = function(info) return AdBlock.db.profile.antispam.enabled end
+                header = {
+                    name = "Anti-Spam works as follows:\n\nIf a message is sent multiple times within <threshold> seconds by the same person on the same channel, then it is flagged as Spam and is blocked if you ticked \"Block Spam\"",
+                    type = "description",
+                    fontSize = "medium",
+                    order = 0
                 },
                 threshold = 
                 {
@@ -216,7 +250,7 @@ local options = {
             order = 16,
             args = {
                 enable = {
-                    name = "Enable",
+                    name = "Keep block history",
                     desc = "When enabled, blocked message are logged for future review",
                     type = "toggle",
                     order = 1,
@@ -231,8 +265,8 @@ local options = {
                     func = "ShowHistory"
                 },
                 limit = {
-                    name = "Size",
-                    desc = "Maximum history size",
+                    name = "Maximum history size",
+                    desc = "How many blocked messages are kept in the history",
                     type = "range",
                     order = 3,
                     min = 5,
@@ -257,7 +291,7 @@ local options = {
             name = "Audit",
             desc = "Announce what would have blocked and why without blocking anything. Useful for testing.",
             type = "toggle",
-            order = 20,
+            order = 16,
             set = function(info, val) AdBlock:ToggleMode(info, val, "audit") end,
             get = function(info) return AdBlock.db.profile.audit end
         },
@@ -265,7 +299,7 @@ local options = {
             name = "Verbose",
             desc = "Print out infos such as when a message is blocked and why.",
             type = "toggle",
-            order = 30,
+            order = 15,
             set = function(info, val) AdBlock:ToggleMode(info, val, "verbose") end,
             get = function(info) return AdBlock.db.profile.verbose end
         },
@@ -279,7 +313,7 @@ local options = {
             get = function(info) return AdBlock.db.profile.debug end
         },
         scope = {
-            name = "Scope",
+            name = "Filter the following channels:",
             desc = "Which channels/message types to activate AdBlock on",
             type = "multiselect",
             order = 40,
@@ -340,6 +374,9 @@ local defaults = {
             counter = 0,
             log = {}
         }
+    },
+    global = {
+        tutorial = true,
     }
   }
 
@@ -449,7 +486,7 @@ function AdBlock:ToggleMode(info, val, mode)
         if val then
             AdBlock:Print(AB.capitalize(mode) .. " mode activated.")
         else
-            AdBlock:Print(mode .. " mode deactivated.")
+            AdBlock:Print(AB.capitalize(mode) .. " mode deactivated.")
         end
     end
 end
@@ -525,7 +562,7 @@ end
 function AdBlock:ShowBlacklist(info)
     self:Print("Blacklist:")
     for k, v in pairs(self.db.profile.blacklist) do
-        print(AB.C(v.name, "red"))
+        print(AB.C(v.name, "red") .. " (" .. v.origin .. ")")
     end
 end
 
@@ -589,7 +626,7 @@ end
 function AdBlock:ShowPals(info)
     self:Print("List of pals (friends & guildies):")
     for k, v in pairs(self.db.char.pals) do
-        print(AB.C(v.name, "teal") .. "(" .. v.origin .. ")")
+        print(AB.C(v.name, "teal") .. " (" .. v.origin .. ")")
     end
 end
 
