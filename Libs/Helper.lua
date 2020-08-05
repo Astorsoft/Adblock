@@ -108,8 +108,17 @@ function AB.GetFullName(name)
     return player:gsub(" ", "")
 end
 
+AB.success_sounds = {
+    631204,	-- sound/creature/hiddenmaster/vo_hidden_master_success_01.ogg 	34e13434acf42408	6.0.1.18125 (Beta)	ogg		
+    631206,	-- sound/creature/hiddenmaster/vo_hidden_master_success_02.ogg 	6752173e1df86e1a	6.0.1.18125 (Beta)	ogg		
+    631208,	-- sound/creature/hiddenmaster/vo_hidden_master_success_03.ogg 	38cf37c1a0581aff	6.0.1.18125 (Beta)	ogg		
+    631210,	-- sound/creature/hiddenmaster/vo_hidden_master_success_04.ogg 	
+    631212,	-- sound/creature/hiddenmaster/vo_hidden_master_success_05.ogg 
+    631214,	-- sound/creature/hiddenmaster/vo_hidden_master_success_06.ogg
+}
 
-function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID, _, _, _, lineID, ...)
+
+function AB.ChatFilter(self, event, msg, author, lang, channelName, current_player, _, channelID, _, _, _, lineID, ...)
     -- Handling the same message firing off the event multiple times
     if lineID == AB.last_lineID then 
         return true
@@ -120,6 +129,7 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
     if (channelID > 3) then 
         return false
     end
+
 
     -- Ignore messages from channels the user specifically filtered out
     if (channelID == 1 and not AdBlock.db.profile.scope.general) or (channelID == 3 and not AdBlock.db.profile.scope.trade) or (channelID == 1 and not AdBlock.db.profile.scope.defense) then
@@ -156,6 +166,9 @@ function AB.ChatFilter(self, event, msg, author, _, channelName, _, _, channelID
             AdBlock:PrintDebug(AB.C(debug_msg, "grey"))
             AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
             AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Test", channel = (channelID or event)})
+            if author == current_player then -- test message send by yourself
+                PlaySoundFile(AB.success_sounds[math.random(#AB.success_sounds)], "Master")
+            end
             return true
         end
     end

@@ -11,11 +11,11 @@ local options = {
         header = {
             name = "AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!",
             type = "description",
-            image = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
+            image = "Interface\\AddOns\\AdBlock\\Textures\\Logo-large",
             imageWidth = 96,
             imageHeight = 96,
             fontSize = "medium",
-            order = 3
+            order = 5
         },
 
         help = {
@@ -23,29 +23,42 @@ local options = {
             guiHidden = true,
             desc = "Show this help",
             type = "execute",
-            order = 1,
+            order = 0,
             func = "ShowHelp"
         },
         enable = {
-            name = "Enable",
+            name = "Enable Addon",
             desc = "Enables/Disables the addon",
             type = "toggle",
-            order = 2,
+            order = 1,
             set = "ToggleAddon",
             get = function(info) return AdBlock.db.profile.enabled end
         },
+        minimap = {
+            name = "Show Minimap Button",
+            desc = "Toggle minimap button visibility",
+            type = "toggle",
+            order = 2,
+            set = "ToggleMinimapButton",
+            get = function(info) return not AdBlock.db.profile.minimap.hide end
+        },
+        spacer = {
+            name = "",
+            type = "description",
+            order = 3
+        },
         stats = {
-            name = "Show AdBlock Stats",
+            name = "Blocking Stats",
             desc = "Show how many ads or spam were blocked thanks to AdBlock",
             type = "execute",
-            order = 2,
+            order = 4,
             func = "GetStats",
         },
         tutorial = {
-            name = "Show the tutorial again",
+            name = "Tutorial",
             desc = "Show the introduction message once more",
             type = "execute",
-            order = 2,
+            order = 4,
             func = "ShowTutorial",
         },
         autoblock = {
@@ -302,12 +315,22 @@ local options = {
             }
         },
         audit = {
-            name = "Audit",
+            name = "Audit Mode",
             desc = "Announce what would have blocked and why without blocking anything. Useful for testing.",
             type = "toggle",
             order = 16,
             set = function(info, val) AdBlock:ToggleMode(info, val, "audit") end,
             get = function(info) return AdBlock.db.profile.audit end
+        },
+        mayhem = {
+            name = "Mayhem",
+            desc = "Activate Mayhem mode (experimental), messing with spammers through whisps, please use it with caution (and fun!)",
+            type = "toggle",
+            order = 17,
+            hidden = true,
+            confirm = "ConfirmMayhem",
+            set = function(info, val) AdBlock:ToggleMode(info, val, "mayhem") end,
+            get = function(info) return AdBlock.db.profile.mayhem end
         },
         verbose = {
             name = "Verbose",
@@ -348,8 +371,10 @@ local options = {
 local defaults = {
     profile = {
       enabled = true,
+      minimap = { hide = true},
       audit = false,
       debug = false,
+      mayhem = false,
       autoblock = false,
       proactive = {
           enabled = true,
@@ -358,7 +383,7 @@ local defaults = {
       },
       antispam = {
           enabled = true,
-          spamThreshold = 300,
+          threshold = 300,
           last_seen = {}
       },
       history = {
@@ -403,14 +428,34 @@ function AdBlock:OnInitialize()
 
     -- TODO: Add DB cleaning
     self:PrintInfo("Type /ab to access the config or /ab stats to see how many Ads and Spam Adblock spared you.")
-
-    if self.db.global.tutorial then
-        self:ShowTutorial()
+    if self.db.profile.mayhem or self.db.profile.debug then
+        options.args.mayhem.hidden = false
     end
-    
+
+    self.ldb = LibStub("LibDataBroker-1.1"):NewDataObject("AdBlock", {
+        type = "data source",
+        text = "Left Click to Toggle addon",
+        icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
+        OnClick = function() InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);InterfaceOptionsFrame_OpenToCategory(self.optionsFrame) end
+    })
+    self.icon = LibStub("LibDBIcon-1.0")
+    self.icon:Register("AdBlock", self.ldb, self.db.profile.minimap)
+    if self.db.profile.minimap.hide then self.icon:Hide("AdBlock") end
 end
 
 
+function AdBlock:ToggleMinimapButton(info, val)
+    self.db.profile.minimap.hide = not val 
+        
+    if val then 
+        self.icon:Show("AdBlock") 
+        if self.db.profile.verbose then self:Print("Showing minimap button") end
+    else 
+        self.icon:Hide("AdBlock") 
+        if self.db.profile.verbose then self:Print("Hiding minimap button") end
+
+    end
+end
 function AdBlock:SyncPals()
     self.db.char.pals = {}
     local player
@@ -435,6 +480,15 @@ function AdBlock:SyncPals()
     player, _ = AB.GetFullName(UnitName("player"))
     self.db.char.pals[player] = {name = player, origin = "yourself"}
     self:PrintDebug("Adding current player " .. AB.C(player, "teal"))
+end
+
+function AdBlock:ConfirmMayhem(info, val)
+   if val then 
+        PlaySoundFile(552486, "Master");  -- 552486	sound/creature/illidan/black_illidan_05.ogg I can feel your hatred ;)
+        return "Are you sure you want to activate Mayhem mode?" 
+    else 
+        return false 
+    end
 end
 
 function AdBlock:OnEnable()
@@ -491,8 +545,21 @@ function AdBlock:ToggleMode(info, val, mode)
         AdBlock.db.profile.antispam.enabled = val
     elseif mode == "proactive" then
         AdBlock.db.profile.proactive.enabled = val
+    elseif mode == "debug" then
+        if val then options.args.mayhem.hidden = false else options.args.mayhem.hidden = true end
+        AdBlock.db.profile[mode] = val;
     else
         AdBlock.db.profile[mode] = val;
+    end
+
+    if mode == "mayhem" then
+        if val then 
+            PlaySoundFile(558780, "Master")  -- 	558780 sound/creature/ragnaros/vo_fl_ragnaros_purge_01.ogg By FIRE BE PURGED
+            AdBlock:Print(AB.C("ACTIVATING MAYHEM MODE! LET'S FIGHT FIRE WITH FIRE", "red"))
+        else 
+            PlaySoundFile(552520, "Master")  -- 	552520	sound/creature/illidan/black_illidan_14.ogg Is this it?
+            AdBlock:Print(AB.C("Deactivating project mayhem, probably a good idea."))
+        end
     end
 
     if self.db.profile.verbose or mode == "verbose" then
@@ -971,6 +1038,7 @@ World of Warcraft is turning like the rest of the internet, full of Boosting mes
     frame:AddChild(usage_header)
     local usage = self.ui:Create("Label")
     usage:SetText([[
+    * Type in /s "adblock:test" to make sure the addon works
     * Type /ab and start fine-tuning the AdBlock to your taste
     * Start in Audit to make sure it would not block messages you would like to keep
     * Remove Audit and switch to Verbose to see when messages are being blocked until you feel confident about the addon, you can see blocked message history at any time through /ab history show
