@@ -11,7 +11,7 @@ local options = {
         header = {
             name = "AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!",
             type = "description",
-            image = "Interface\\AddOns\\AdBlock\\Textures\\Logo-large",
+            image = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
             imageWidth = 96,
             imageHeight = 96,
             fontSize = "medium",
@@ -438,6 +438,7 @@ function AdBlock:OnInitialize()
         icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
         OnClick = function() InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);InterfaceOptionsFrame_OpenToCategory(self.optionsFrame) end
     })
+    if not self.db.profile.enabled then self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo-off" end
     self.icon = LibStub("LibDBIcon-1.0")
     self.icon:Register("AdBlock", self.ldb, self.db.profile.minimap)
     if self.db.profile.minimap.hide then self.icon:Hide("AdBlock") end
@@ -500,7 +501,11 @@ function AdBlock:OnEnable()
         ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", AB.ChatFilter)
-        self:PrintInfo("Adblock is now enabled.")  
+        self:PrintInfo("Adblock is now enabled.")
+        if not self.db.profile.minimap.hide then
+            self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo"
+            self.icon:Refresh("AdBlock", ldb)
+        end
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 end
@@ -514,6 +519,10 @@ function AdBlock:OnDisable()
     if self.db.char.sync_timer then
         self:CancelTimer(self.db.char.sync_timer)
         self.db.char.sync_timer = nil
+    end
+    if not self.db.profile.minimap.hide then
+        self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo-off"
+        self.icon:Refresh("AdBlock", ldb)
     end
     self:PrintInfo("Adblock is now disabled.")
 end
@@ -1039,13 +1048,12 @@ World of Warcraft is turning like the rest of the internet, full of Boosting mes
     local usage = self.ui:Create("Label")
     usage:SetText([[
     * Type in /s "adblock:test" to make sure the addon works
-    * Type /ab and start fine-tuning the AdBlock to your taste
-    * Start in Audit to make sure it would not block messages you would like to keep
-    * Remove Audit and switch to Verbose to see when messages are being blocked until you feel confident about the addon, you can see blocked message history at any time through /ab history show
-
-You can go further and activate proactive mode (/ab proactive) so that obvious advertisement messages are also blocked directly from the first message, it is tuned to remove all the BOOST offers while keeping regular WTS or WTB request for items/mounts, guild announces etc. You can configure the keywords Adblock triggers on in the settings
-    
-Finally, you can activate auto-blacklist to Blacklist players that repeatedly trigger Adblock to be sure you'll never hear from them again
+    * Type /ab  or click on the button below and start fine-tuning the AdBlock to your taste
+    * If you're a bit scared of blocking important stuff: 
+        * Activate "Audit" to make sure it would not block messages you would like to keep
+        * Later, remove Audit and switch to Verbose to see when messages are being blocked 
+        * You can see blocked message history at any time in the settings or via /ab history show
+    * Finally, you can activate Auto-Blacklist to permanently mute players that repeatedly trigger Adblock
     
     ]])
     usage:SetFont("Fonts\\FRIZQT__.TTF", 12)
