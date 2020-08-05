@@ -12,8 +12,8 @@ local options = {
             name = "AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!",
             type = "description",
             image = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
-            imageWidth = 96,
-            imageHeight = 96,
+            imageWidth = 64,
+            imageHeight = 64,
             fontSize = "medium",
             order = 5
         },
@@ -492,11 +492,28 @@ function AdBlock:ConfirmMayhem(info, val)
     end
 end
 
+
+local adblock_events = {"CHAT_MSG_SAY", "CHAT_MSG_CHANNEL", "CHAT_MSG_YELL", "CHAT_MSG_WHISPER"}
+
 function AdBlock:OnEnable()
     -- Called when the addon is enabled
     if self.db.profile.enabled then
         self:SyncPals()
         self.db.char.sync_timer = self:ScheduleRepeatingTimer("SyncPals", 300)
+        
+        for e = 1, #adblock_events do
+            local event = adblock_events[e]
+            local frames = {GetFramesRegisteredForEvent(event)}
+            for i = 1, #frames do
+                local frame = frames[i]
+                frame:UnregisterEvent(event)
+            end
+            self:RegisterEvent(event, "ChatFilterLogic")
+            for i = 1, #frames do
+                local frame = frames[i]
+                frame:RegisterEvent(event)
+            end
+        end
         ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", AB.ChatFilter)
@@ -510,8 +527,16 @@ function AdBlock:OnEnable()
     end
 end
 
+function AdBlock:ChatFilterLogic(...)
+    return AB.ChatFilterLogic(...)
+end
+
 function AdBlock:OnDisable()
     -- Called when the addon is disabled
+    for i = 1, #adblock_events do
+        local event = adblock_events[i]
+        self:UnregisterEvent(event, "ChatFilterLogic")
+    end
     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CHANNEL", AB.ChatFilter)
     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", AB.ChatFilter)
     ChatFrame_RemoveMessageEventFilter("CHAT_MSG_YELL", AB.ChatFilter)
@@ -878,29 +903,55 @@ function AdBlock:RemoveFromWhitelist(info, val)
     end
 end
 
-function AdBlock:PrintError(text)
-    self:Print(AB.C("[ERROR] ", "red") .. text)
+function AdBlock:PrintError(frame, text)
+    if text == nil then
+        text = frame
+        self:Print(AB.C("[ERROR] ", "red") .. text)
+    else
+        self:Print(frame, AB.C("[ERROR] ", "red") .. text)
+    end
 end
 
-function AdBlock:PrintWarning(text)
-    self:Print(AB.C("[WARNING] ", "orange") .. text)
+function AdBlock:PrintWarning(frame, text)
+    if text == nil then
+        text = frame
+        self:Print(AB.C("[WARNING] ", "orange") .. text)
+    else
+        self:Print(frame, AB.C("[WARNING] ", "orange") .. text)
+    end
 end
 
-function AdBlock:PrintInfo(text)
+function AdBlock:PrintInfo(frame, text)
     if self.db.profile.verbose then
-        self:Print(AB.C("[INFO] ", "grey") .. text)
+        if text == nil then
+            text = frame
+            self:Print(AB.C("[INFO] ", "grey") .. text)
+        else
+
+            self:Print(frame, AB.C("[INFO] ", "grey") .. text)
+        end
     end
 end
 
-function AdBlock:PrintAudit(text)
+function AdBlock:PrintAudit(frame, text)
     if self.db.profile.audit then
-        self:Print(AB.C("[AUDIT] ", "green") .. text)
+        if text == nil then
+            text = frame
+            self:Print(AB.C("[AUDIT] ", "green") .. text)
+        else
+            self:Print(frame, AB.C("[AUDIT] ", "green") .. text)
+        end
     end
 end
 
-function AdBlock:PrintDebug(text)
+function AdBlock:PrintDebug(frame, text)
     if self.db.profile.debug then
-        self:Print(AB.C("[DEBUG] ", "orange") .. text)
+        if text == nil then
+            text = frame
+            self:Print(AB.C("[DEBUG] ", "orange") .. text)
+        else
+            self:Print(frame, AB.C("[DEBUG] ", "orange") .. text)
+        end
     end
 end
 

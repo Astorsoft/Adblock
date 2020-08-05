@@ -118,13 +118,20 @@ AB.success_sounds = {
 }
 
 
-function AB.ChatFilter(self, event, msg, author, lang, channelName, current_player, _, channelID, _, _, _, lineID, ...)
-    -- Handling the same message firing off the event multiple times
-    if lineID == AB.last_lineID then 
+AB.blocked_lineID = 0
+function AB.ChatFilter(_,_,_,_,_,_,_,_,_,_,_,_,lineID, ...)
+    if AB.blocked_lineID ~= lineID then
+		return false
+    else
         return true
     end
-    AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
+end
 
+
+
+function AB.ChatFilterLogic(event, msg, author, lang, channelName, current_player, author_status, channelID, channel_num, channel_name, arg1, lineID, guid, arg2, arg3, ...)
+    
+    AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
     -- Ignore messages coming from outside General (1) trade (2), defense (3) or say/yell/whispe (0)
     if (channelID > 3) then 
         return false
@@ -144,6 +151,14 @@ function AB.ChatFilter(self, event, msg, author, lang, channelName, current_play
     if #msg <= 10 then -- not counting very short message which can be casual smileys/reactions like "lol"
         return false
     end
+
+
+
+    -- Handling the same message firing off the event multiple times (one per frame)
+    --if lineID == AB.last_lineID then 
+    --    return false
+    --end
+
 
     local player = AB.GetFullName(author)
     -- user is part of whitelist and is automatically approved
@@ -169,6 +184,7 @@ function AB.ChatFilter(self, event, msg, author, lang, channelName, current_play
             if author == current_player then -- test message send by yourself
                 PlaySoundFile(AB.success_sounds[math.random(#AB.success_sounds)], "Master")
             end
+            AB.blocked_lineID = lineID
             return true
         end
     end
@@ -189,6 +205,7 @@ function AB.ChatFilter(self, event, msg, author, lang, channelName, current_play
             AdBlock:PrintDebug(AB.C(msg, "grey"))
             AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
             AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Blacklisted", channel = (channelID or event)})
+            AB.blocked_lineID = lineID
             return true
         end
     end
@@ -218,6 +235,7 @@ function AB.ChatFilter(self, event, msg, author, lang, channelName, current_play
                     AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
                     AdBlock:PrintDebug(AB.C(msg, "grey"))
                     AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Spamming", channel = (channelID or event)})
+                    AB.blocked_lineID = lineID
                     return true
                 end
             else
@@ -248,6 +266,7 @@ function AB.ChatFilter(self, event, msg, author, lang, channelName, current_play
                 AdBlock:AddStrikes(player)
                 AdBlock.db.profile.session_counter = AdBlock.db.profile.session_counter + 1
                 AdBlock:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Advertising", channel = (channelID or event)})
+                AB.blocked_lineID = lineID
                 return true
             end
         end
