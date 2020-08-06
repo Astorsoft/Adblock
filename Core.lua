@@ -901,28 +901,28 @@ function AdBlock:RemoveFromWhitelist(info, val)
 end
 
 function AdBlock:PrintError(text)
-    self:Print(AB.C("[ERROR] ", "red") .. text)
+    self:Print(AB.C("[ERROR] ", "red") ..  (text or "<<NIL>>"))
 end
 
 function AdBlock:PrintWarning(text)
-    self:Print(AB.C("[WARNING] ", "orange") .. text)
+    self:Print(AB.C("[WARNING] ", "orange") ..  (text or "<<NIL>>"))
 end
 
 function AdBlock:PrintInfo(text)
     if self.db.profile.verbose then
-        self:Print(AB.C("[INFO] ", "grey") .. text)
+        self:Print(AB.C("[INFO] ", "grey") ..  (text or "<<NIL>>"))
     end
 end
 
 function AdBlock:PrintAudit(text)
     if self.db.profile.audit then
-        self:Print(AB.C("[AUDIT] ", "green") .. text)
+        self:Print(AB.C("[AUDIT] ", "green") ..  (text or "<<NIL>>"))
     end
 end
 
 function AdBlock:PrintDebug(text)
     if self.db.profile.debug then
-        self:Print(AB.C("[DEBUG] ", "orange") .. text)
+        self:Print(AB.C("[DEBUG] ", "orange") .. (text or "<<NIL>>"))
     end
 end
 
@@ -1109,7 +1109,7 @@ function AdBlock:ChangeHistorySize(info, val)
 end
 
 function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_player, author_status, channelID, channel_num, channel_name, arg1, lineID, guid, arg2, arg3, ...)
-    
+
     AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
 
     if IsEncounterInProgress() then -- Very unlikely you'll get spam in the middle of a raid fight, and let's keep our CPU for the mechanics
