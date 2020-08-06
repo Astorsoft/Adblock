@@ -129,7 +129,7 @@ L["mode activated."] = true
 L["mode deactivated."] = true
 
 -- function AdBlock:GetStats
-L["messages blocked this session, "] = true
+L["messages blocked this session"] = true
 L["in total!"] = true
 
 

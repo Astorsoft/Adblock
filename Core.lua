@@ -615,7 +615,7 @@ function AdBlock:ToggleAddon(info, val)
 end
 
 function AdBlock:GetStats()
-    self:Print(AB.C(self.db.profile.session_counter, "orange") .. " " .. L["messages blocked this session,"] .. " " .. AB.C(self.db.profile.global_counter, "orange") .. " " .. L["in total!"])
+    self:Print(AB.C(self.db.profile.session_counter, "orange") .. " " .. L["messages blocked this session"] .. ", " .. AB.C(self.db.profile.global_counter, "orange") .. " " .. L["in total!"])
 end
 
 function AdBlock:SetScope(info, keyname, state)
@@ -1024,7 +1024,7 @@ function AdBlock:AddToHistory(entry)
 end
 
 function AdBlock:PurgeHistory(info)
-    self:PrintINFO(L["History purged"])
+    self:PrintInfo(L["History purged"])
     self.db.char.history = {}
 end
 
