@@ -91,24 +91,24 @@ local options = {
             order = 12,
             args = {
                 header = {
-                    name = "Add players that you want to always block, only applies to the channels you filter. \n\nIf you ticked \"Auto-Blacklist\", people that repeatedly Spam or send ads (more than 10 times) will automatically get added in your blacklist.",
+                    name = L["Add players that you want to always block, only applies to the channels you filter. \n\nIf you ticked \"Auto-Blacklist\", people that repeatedly Spam or send ads (more than 10 times) will automatically get added in your blacklist."],
                     type = "description",
                     order = 0,
                     fontSize = "medium",
                 },
                 add = {
-                    name = "Add",
-                    desc = "Add player to permanent blacklist, you'll no longer see any message from them on channel where Adblock is active",
+                    name = L["Add"],
+                    desc = L["Add player to permanent blacklist, you'll no longer see any message from them on channel where Adblock is active"],
                     order = 1,
                     type = "input",
                     get = function(info, val) return "" end,
                     set = "AddToBlacklist",
                     pattern = "",
-                    usage = "Playername OR Playername-Realm"
+                    usage = L["Playername OR Playername-Realm"]
                 },
                 remove = {
-                    name = "Remove",
-                    desc = "Remove player from permanent blacklist, player will still be blocked through normal Adblock Antispam/antiAds heuristics",
+                    name = L["Remove"],
+                    desc = L["Remove player from permanent blacklist, player will still be blocked through normal Adblock Antispam/antiAds heuristics"],
                     order = 2,
                     type = "select",
                     values = "GetBlacklist",
@@ -119,15 +119,15 @@ local options = {
                     style = "dropdown"
                 },
                 show = {
-                    name = "Show Blacklist",
-                    desc = "Show current Blacklist",
+                    name = L["Show Blacklist"],
+                    desc = L["Show current Blacklist"],
                     order = 3,
                     type = "execute",
                     func = "ShowBlacklist",
                 },
                 purge = {
-                    name = "Purge",
-                    desc = "Empty the blacklist",
+                    name = L["Purge"],
+                    desc = L["Empty the blacklist"],
                     order = 4,
                     type = "execute",
                     confirm = "PurgeBlacklistConfirmation",
@@ -141,14 +141,14 @@ local options = {
             order = 13,
             args = {
                 header = {
-                    name = "Add players you want to never be flagged as Spam or Advertisement.\n\nNo need to add friends or guildies, they will automatically be whitelisted as part of the \"Pals\"",
+                    name = L["Add players you want to never be flagged as Spam or Advertisement.\n\nNo need to add friends or guildies, they will automatically be whitelisted as part of the \"Pals\""],
                     type = "description",
                     order = 0,
                     fontSize = "medium",
                 },
                 add = {
-                    name = "Add",
-                    desc = "Add players to whitelist, you'll never block any message from them",
+                    name = L["Add"],
+                    desc = L["Add players to whitelist, you'll never block any message from them"],
                     order = 1,
                     type = "input",
                     get = function(info, val) return "" end,
@@ -157,8 +157,8 @@ local options = {
                     usage = "Playername OR Playername-Realm"
                 },
                 remove = {
-                    name = "Remove",
-                    desc = "Remove player from the whitelist, user will now be impacted by Adblock Antispam/antiAds heuristics",
+                    name = L["Remove"],
+                    desc = L["Remove player from the whitelist, user will now be impacted by Adblock Antispam/antiAds heuristics"],
                     order = 2,
                     type = "select",
                     values = "GetWhitelist",
@@ -169,30 +169,30 @@ local options = {
                     style = "dropdown"
                 },
                 show = {
-                    name = "Show Whitelist",
-                    desc = "Show current whitelist",
+                    name = L["Show Whitelist"],
+                    desc = L["Show current whitelist"],
                     order = 3,
                     type = "execute",
                     func = "ShowWhitelist",
                 },
                 purge = {
-                    name = "Purge Whitelist",
-                    desc = "Empty the Whitelist",
+                    name = L["Purge"],
+                    desc = L["Empty the Whitelist"],
                     order = 4,
                     type = "execute",
                     confirm = "PurgeWhitelistConfirmation",
                     func = "PurgeWhitelist"
                 },
                 sync_pals = {
-                    name = "Sync Pals",
-                    desc = "Refresh the friends and guildies list so Adblock never activates on them, automatically refreshed every few minutes",
+                    name = L["Sync Pals"],
+                    desc = L["Refresh the friends and guildies list so Adblock never activates on them, automatically refreshed every few minutes"],
                     order = 5,
                     type = "execute",
                     func = "SyncPals"
                 },
                 show_pals = {
-                    name = "Show Pals",
-                    desc = "Show the current list of piles",
+                    name = L["Show Pals"],
+                    desc = L["Show the current list of piles"],
                     order = 6,
                     type = "execute",
                     func = "ShowPals"
@@ -205,21 +205,21 @@ local options = {
             order = 14,
             args = {
                 description = {
-                    name = "Adblocking works like this: \n\nIf a message contains one of the \"Selling Action Keywords\" |cFFFF0000AND|r one of the \"Selling Object Keywords\", then it will be flagged as advertisement and blocked if you ticked \"Block ads\".\n\n This allows to block ads like \"WTS lvling boost\" while keeping trade messages like \"WTS Sky-Golem\".",
+                    name = L["Adblocking works like this: \n\nIf a message contains one of the \"Selling Action Keywords\" |cFFFF0000AND|r one of the \"Selling Object Keywords\", then it will be flagged as advertisement and blocked if you ticked \"Block ads\".\n\n This allows to block ads like \"WTS lvling boost\" while keeping trade messages like \"WTS Sky-Golem\"."],
                     type = "description",
                     fontSize = "medium",
                     order = 1
                 },
                 reset = {
-                    name = "Restore defaults",
-                    desc = "Revert back to the default configuration",
+                    name = L["Restore defaults"],
+                    desc = L["Revert back to the default configuration"],
                     type = "execute",
                     order = 2,
                     func = "RestoreHeuristicKeywords"
                 },
                 selling_actions = {
-                    name = "Selling Action keywords",
-                    desc = "Keywords to detect as an intent to sell",
+                    name = L["Selling Action keywords"],
+                    desc = L["Keywords to detect as an intent to sell"],
                     type = "input",
                     multiline = true,
                     width = "full",
@@ -230,8 +230,8 @@ local options = {
                     usage = "keyword1,keyword2,keyword3"
                 },
                 selling_objects = {
-                    name = "Selling Object keywords",
-                    desc = "Keywords to detect as an object/service being sold",
+                    name = L["Selling Object keywords"],
+                    desc = L["Keywords to detect as an object/service being sold"],
                     type = "input",
                     multiline = true,
                     width = "full",
@@ -250,15 +250,15 @@ local options = {
             order = 15,
             args = {
                 header = {
-                    name = "Anti-Spam works as follows:\n\nIf a message is sent multiple times within <threshold> seconds by the same person on the same channel, then it is flagged as Spam and is blocked if you ticked \"Block Spam\"",
+                    name = L["Anti-Spam works as follows:\n\nIf a message is sent multiple times within <threshold> seconds by the same person on the same channel, then it is flagged as Spam and is blocked if you ticked \"Block Spam\""],
                     type = "description",
                     fontSize = "medium",
                     order = 0
                 },
                 threshold = 
                 {
-                    name = "threshold",
-                    desc = "Minimum time (in seconds) between two identical message to not be identified as spam.",
+                    name = L["Threshold"],
+                    desc = L["Minimum time (in seconds) between two identical message to not be identified as spam."],
                     type = "range",
                     order = 2,
                     min = 5,
@@ -277,23 +277,23 @@ local options = {
             order = 16,
             args = {
                 enable = {
-                    name = "Keep block history",
-                    desc = "When enabled, blocked message are logged for future review",
+                    name = L["Keep block history"],
+                    desc = L["When enabled, blocked message are logged for future review"],
                     type = "toggle",
                     order = 1,
                     set = function(info, val) AdBlock:ToggleMode(info, val, "history") end,
                     get = function(info) return AdBlock.db.profile.history.enabled end
                 },
                 show = {
-                    name = "Show",
-                    desc = "Show blocked message history for current user",
+                    name = L["Show"],
+                    desc = L["Show blocked message history for current user"],
                     type = "execute",
                     order = 2,
                     func = "ShowHistory"
                 },
                 limit = {
-                    name = "Maximum history size",
-                    desc = "How many blocked messages are kept in the history",
+                    name = L["Maximum history size"],
+                    desc = L["How many blocked messages are kept in the history"],
                     type = "range",
                     order = 3,
                     min = 5,
@@ -305,10 +305,10 @@ local options = {
                     get = function(info) return AdBlock.db.profile.history.size end
                 },
                 purge = {
-                    name = "Purge",
-                    desc = "Purge blocked message history for current user",
+                    name = L["Purge"],
+                    desc = L["Purge blocked message history for current user"],
                     type = "execute",
-                    confirm = function(info) return "Purge the blocked messages history? This cannot be undone." end,
+                    confirm = function(info) return L["Purge the blocked messages history? This cannot be undone."] end,
                     order = 4,
                     func = "PurgeHistory"
                 }
@@ -434,7 +434,7 @@ function AdBlock:OnInitialize()
 
     self.ldb = LibStub("LibDataBroker-1.1"):NewDataObject("AdBlock", {
         type = "data source",
-        text = "Left Click to Toggle addon",
+        text = L["Left Click to Toggle addon"],
         icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
         OnClick = function() InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);InterfaceOptionsFrame_OpenToCategory(self.optionsFrame) end
     })
@@ -442,6 +442,10 @@ function AdBlock:OnInitialize()
     self.icon = LibStub("LibDBIcon-1.0")
     self.icon:Register("AdBlock", self.ldb, self.db.profile.minimap)
     if self.db.profile.minimap.hide then self.icon:Hide("AdBlock") end
+
+    self:SecureHook("Logout", "Logout")
+    self:SecureHook("Quit", "Logout")
+
 end
 
 
@@ -523,7 +527,6 @@ function AdBlock:OnEnable()
             self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo"
             self.icon:Refresh("AdBlock", ldb)
         end
-        self:RegisterEvent("PLAYER_LOGOUT")
     end
 end
 
@@ -553,7 +556,7 @@ function AdBlock:ShowHelp()
     LibStub("AceConfigCmd-3.0"):HandleCommand("ab", "AdBlock", "")
 end
 
-function AdBlock:PLAYER_LOGOUT(...)
+function AdBlock:Logout(...)
     self.db.profile.global_counter = self.db.profile.global_counter + self.db.profile.session_counter
     self.db.profile.session_counter = 0
     if self.db.char.sync_timer then
@@ -586,18 +589,18 @@ function AdBlock:ToggleMode(info, val, mode)
     if mode == "mayhem" then
         if val then 
             PlaySoundFile(558780, "Master")  -- 	558780 sound/creature/ragnaros/vo_fl_ragnaros_purge_01.ogg By FIRE BE PURGED
-            AdBlock:Print(AB.C("ACTIVATING MAYHEM MODE! LET'S FIGHT FIRE WITH FIRE", "red"))
+            AdBlock:Print(AB.C(L["ACTIVATING MAYHEM MODE! LET'S FIGHT FIRE WITH FIRE"], "red"))
         else 
             PlaySoundFile(552520, "Master")  -- 	552520	sound/creature/illidan/black_illidan_14.ogg Is this it?
-            AdBlock:Print(AB.C("Deactivating project mayhem, probably a good idea."))
+            AdBlock:Print(AB.C(L["Deactivating project mayhem, probably a good idea."]))
         end
     end
 
     if self.db.profile.verbose or mode == "verbose" then
         if val then
-            AdBlock:Print(AB.capitalize(mode) .. " mode activated.")
+            AdBlock:Print(AB.capitalize(mode) .. " " .. L["mode activated."])
         else
-            AdBlock:Print(AB.capitalize(mode) .. " mode deactivated.")
+            AdBlock:Print(AB.capitalize(mode) ..  " "  .. L["mode deactivated."])
         end
     end
 end
@@ -612,7 +615,7 @@ function AdBlock:ToggleAddon(info, val)
 end
 
 function AdBlock:GetStats()
-    self:Print(AB.C(self.db.profile.session_counter, "orange") .. " messages blocked this session, " .. AB.C(self.db.profile.global_counter, "orange") .. " in total!")
+    self:Print(AB.C(self.db.profile.session_counter, "orange") .. " " .. L["messages blocked this session,"] .. " " .. AB.C(self.db.profile.global_counter, "orange") .. " " .. L["in total!"])
 end
 
 function AdBlock:SetScope(info, keyname, state)
@@ -620,9 +623,9 @@ function AdBlock:SetScope(info, keyname, state)
     
     if self.db.profile.verbose then
         if state then
-            AdBlock:Print("Adblock activated for " .. keyname)
+            AdBlock:Print(L["Adblock activated for"] .. " " .. keyname)
         else
-            AdBlock:Print("Adblock disabled for " .. keyname)
+            AdBlock:Print(L["Adblock disabled for"] .. " " .. keyname)
         end
     end
 end
@@ -685,27 +688,27 @@ function AdBlock:ShowBlacklist(info)
     end
 
     if info.uiType == "cmd" then
-        self:Print("Blacklist:")
+        self:Print(L["Blacklist"]..":")
         print(bl_text)
         
         if count then
-            self:Print(AB.C(count, "teal") .. " players found.")
+            self:Print(AB.C(count, "teal") .. " " .. L["players found."])
         else
-            self:Print("List is empty!")
+            self:Print(L["List is empty!"])
         end
     else -- GUI
         AB.blacklist_frame = self.ui:Create("Frame")
-        AB.blacklist_frame:SetTitle("AdBlock - Blacklisted users")
+        AB.blacklist_frame:SetTitle(L["AdBlock - Blacklisted users"])
         AB.blacklist_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
         AB.blacklist_frame:SetLayout("List")
         local button = self.ui:Create("Button")
-        button:SetText("Refresh")
+        button:SetText(L["Refresh"])
         button:SetWidth(200)
         local list_widget = self.ui:Create("MultiLineEditBox")
 
         list_widget:SetText(bl_text)
         list_widget:SetRelativeWidth(1)
-        list_widget:SetLabel("Blacklisted users: " .. count)
+        list_widget:SetLabel(L["Blacklisted users:"] .. " " .. count)
         list_widget:SetFullHeight(true)
         list_widget:DisableButton(true)
         list_widget:SetNumLines(27)
@@ -724,7 +727,7 @@ end
 
 function AdBlock:PurgeBlacklistConfirmation(info)
     if next(self.db.profile.blacklist) then -- trick to check if the blacklist contains at least one value
-        return AB.C("[WARNING] ", "orange") .. "Are you sure you want to purge the blacklist? This cannot be undone."
+        return AB.C(L["[WARNING]"], "orange") .. " " .. L["Are you sure you want to purge the blacklist? This cannot be undone."]
     else
         return false
     end
@@ -734,11 +737,11 @@ function AdBlock:AddToBlacklist(info, val)
     local player = AB.GetFullName(val)
     
     if self.db.profile.blacklist[player] then
-        self:PrintError("User " .. AB.C(player, "teal") .. " is already in the blacklist.")
+        self:PrintError("User " .. AB.C(player, "teal") .. " " .. L["is already in the blacklist."])
     elseif self.db.profile.whitelist[player] then
-        self:PrintError("User " .. AB.C(player, "teal") .. " is already in the whitelist, remove it from the whistelist first.")
+        self:PrintError("User " .. AB.C(player, "teal") .. " " .. L["is already in the whitelist, remove it from the whistelist first."])
     else
-        self.db.profile.blacklist[player] = { name = player, origin = "manual"}
+        self.db.profile.blacklist[player] = { name = player, origin = L["Manual"]}
     end 
 end
 
@@ -748,7 +751,7 @@ function AdBlock:RemoveFromBlacklist(info, val)
     if self.db.profile.blacklist[player] then
         self.db.profile.blacklist[player] = nil
     else
-        self:PrintError("User " .. AB.C(player, "teal") .. " not found in the blacklist")
+        self:PrintError(L["User"] .. " " .. AB.C(player, "teal") .. " " .. L["not found in the blacklist"])
     end
 end
 
@@ -783,27 +786,27 @@ function AdBlock:ShowWhitelist(info)
     end
 
     if info.uiType == "cmd" then
-        self:Print("Whitelist:")
+        self:Print(L["Whitelist:"])
         print(wl_text)
         
         if count then
-            self:Print(AB.C(count, "teal") .. " players found.")
+            self:Print(AB.C(count, "teal") .. " ".. L["player(s) found."])
         else
-            self:Print("List is empty!")
+            self:Print(L["List is empty!"])
         end
     else -- GUI
         AB.whitelist_frame = self.ui:Create("Frame")
-        AB.whitelist_frame:SetTitle("AdBlock - Whitelisted users")
+        AB.whitelist_frame:SetTitle(L["AdBlock - Whitelisted users"])
         AB.whitelist_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
         AB.whitelist_frame:SetLayout("List")
         local button = self.ui:Create("Button")
-        button:SetText("Refresh")
+        button:SetText(L["Refresh"])
         button:SetWidth(200)
         local list_widget = self.ui:Create("MultiLineEditBox")
 
         list_widget:SetText(wl_text)
         list_widget:SetRelativeWidth(1)
-        list_widget:SetLabel("Whitelisted users: " .. count)
+        list_widget:SetLabel(L["Whitelisted users:"] .." " .. count)
         list_widget:SetFullHeight(true)
         list_widget:DisableButton(true)
         list_widget:SetNumLines(27)
@@ -835,23 +838,23 @@ function AdBlock:ShowPals(info)
         print(pals_text)
         
         if count then
-            self:Print(AB.C(count, "teal") .. " players found.")
+            self:Print(AB.C(count, "teal") .. " " .. L["player(s) found."])
         else
-            self:Print("List is empty!")
+            self:Print(L["List is empty!"])
         end
     else -- GUI
         AB.pals_frame = self.ui:Create("Frame")
-        AB.pals_frame:SetTitle("AdBlock - List of pals (friends and guildies)")
+        AB.pals_frame:SetTitle(L["AdBlock - List of pals (friends and guildies)"])
         AB.pals_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
         AB.pals_frame:SetLayout("List")
         local button = self.ui:Create("Button")
-        button:SetText("Refresh")
+        button:SetText(L["Refresh"])
         button:SetWidth(200)
         local list_widget = self.ui:Create("MultiLineEditBox")
 
         list_widget:SetText(pals_text)
         list_widget:SetRelativeWidth(1)
-        list_widget:SetLabel("Pals in total: " .. count)
+        list_widget:SetLabel(L["Pals in total:"] .. " " .. count)
         list_widget:SetFullHeight(true)
         list_widget:DisableButton(true)
         list_widget:SetNumLines(27)
@@ -871,7 +874,7 @@ end
 
 function AdBlock:PurgeWhitelistConfirmation(info)
     if next(self.db.profile.whitelist) then -- trick to check if the blacklist contains at least one value
-        return AB.C("[WARNING] ", "orange") .. "Are you sure you want to purge the whitelist? This cannot be undone."
+        return AB.C(L["[WARNING]"], "orange") .. " " .. L["Are you sure you want to purge the whitelist? This cannot be undone."]
     else
         return false
     end
@@ -881,11 +884,11 @@ function AdBlock:AddToWhitelist(info, val)
     local player = AB.GetFullName(val)
 
     if self.db.profile.whitelist[player] then
-        self:PrintError("User " .. AB.C(player, "teal") .. " is already in the Whitelist")
+        self:PrintError(L["User"] .. " ".. AB.C(player, "teal") .. " " .. L["is already in the Whitelist"])
     elseif self.db.profile.blacklist[player] then
-        self:PrintError("User " .. AB.C(player, "teal") .. " is already in the blacklist, remove it from the blacklist first.")
+        self:PrintError(L["User"] .. " " .. AB.C(player, "teal") .. " " .. L["is already in the blacklist, remove it from the blacklist first."])
     else
-        self:PrintInfo("User " .. AB.C(player, "teal") .. " added in the whitelist")
+        self:PrintInfo(L["User"] .. " " .. AB.C(player, "teal") .. " " .. L["added in the whitelist"])
         self.db.profile.whitelist[player] = { name = player, origin = "manual"}
     end 
 end
@@ -896,33 +899,33 @@ function AdBlock:RemoveFromWhitelist(info, val)
     if self.db.profile.whitelist[player] then
         self.db.profile.whitelist[player] = nil
     else
-        self:PrintError("User " .. AB.C(player, "teal") .. " not found in the whitelist")
+        self:PrintError(L["User"] .. " " .. AB.C(player, "teal") .. " " .. L["not found in the whitelist"])
     end
 end
 
 function AdBlock:PrintError(text)
-    self:Print(AB.C("[ERROR] ", "red") ..  (text or "<<NIL>>"))
+    self:Print(AB.C(L["[ERROR]"] , "red") ..  " " .. (text or "<<NIL>>"))
 end
 
 function AdBlock:PrintWarning(text)
-    self:Print(AB.C("[WARNING] ", "orange") ..  (text or "<<NIL>>"))
+    self:Print(AB.C(L["[WARNING]"], "orange") .. " " ..  (text or "<<NIL>>"))
 end
 
 function AdBlock:PrintInfo(text)
     if self.db.profile.verbose then
-        self:Print(AB.C("[INFO] ", "grey") ..  (text or "<<NIL>>"))
+        self:Print(AB.C(L["[INFO]"], "grey") .. " " .. (text or "<<NIL>>"))
     end
 end
 
 function AdBlock:PrintAudit(text)
     if self.db.profile.audit then
-        self:Print(AB.C("[AUDIT] ", "green") ..  (text or "<<NIL>>"))
+        self:Print(AB.C(L["[AUDIT]"], "green") ..  " " .. (text or "<<NIL>>"))
     end
 end
 
 function AdBlock:PrintDebug(text)
     if self.db.profile.debug then
-        self:Print(AB.C("[DEBUG] ", "orange") .. (text or "<<NIL>>"))
+        self:Print(AB.C(L["[DEBUG]"], "orange") .. " " .. (text or "<<NIL>>"))
     end
 end
 
@@ -941,16 +944,16 @@ function AdBlock:Heuristics(msg)
     return false
 end
 
-function AdBlock:AddStrikes(player)
+function AdBlock:AddStrikes(player) 
     if self.db.profile.strikelist[player] then 
         self.db.profile.strikelist[player] = self.db.profile.strikelist[player] + 1 
     else 
         self.db.profile.strikelist[player] = 1 
     end
     
-    self:PrintDebug("Adding 1 strike to " .. AB.C(player, "teal") .. " (" .. self.db.profile.strikelist[player] .. " strikes total)")
+    self:PrintDebug(L["Adding 1 strike to"] .. " ".. AB.C(player, "teal") .. " (" .. self.db.profile.strikelist[player] .. " " .. L["strikes total"] .. ")")
     if self.db.profile.autoblock and self.db.profile.strikelist[player] > 10 then -- this user is most likely a spammer with 10 identical messages at less than blockDuration from each other
-        self:PrintInfo("Adding player " .. AB.C(player, "teal") .. " in the permanent blocklist after 10 strikes.")
+        self:PrintInfo(L["Adding player"] .. " " .. AB.C(player, "teal") .. " " .. L["in the permanent blocklist after 10 strikes."])
         self.db.profile.blacklist[player] = { name = player, origin = "autoblock" }
     end
 end
@@ -960,7 +963,7 @@ function AdBlock:GetHistoryText()
     local history_text = ""
     for index = 1, #self.db.char.history do
         local v = self.db.char.history[index]
-        history_text = history_text .. AB.C("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason .. "\n", "red")
+        history_text = history_text .. AB.C("---------- " .. L["Entry"] .. " " .. index .. " ".. L["blocked for reason:"] .. " " .. v.reason .. "\n", "red")
         history_text = history_text .. "[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:"
         history_text = history_text .. AB.C(v.msg, "white") .. "\n\n"
     end
@@ -976,24 +979,24 @@ function AdBlock:ShowHistory(info)
 
         for index = #self.db.char.history, 1, -1 do
             local v = self.db.char.history[index]
-            self:Print("---------- " .. "Entry " .. index .. " blocked for reason: " .. v.reason)
+            self:Print("---------- " .. L["Entry "] .. index .. " ".. L["blocked for reason:"] .. v.reason)
             print("[" ..  AB.C(v.channel, "yellow") .. "] [" .. AB.C(v.last_seen, "orange") .. "] [" .. AB.C(v.author, "teal") .. "]:")
             print(AB.C(v.msg, "white"))
         end
     else
         AB.history_frame = self.ui:Create("Frame")
-        AB.history_frame:SetTitle("AdBlock - Blocked Messages History")
+        AB.history_frame:SetTitle(L["AdBlock - Blocked Messages History"])
         AB.history_frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
         AB.history_frame:SetLayout("List")
         local button = self.ui:Create("Button")
-        button:SetText("Refresh")
+        button:SetText(L["Refresh"])
         button:SetWidth(200)
         local history_widget = self.ui:Create("MultiLineEditBox")
         local history_text = self:GetHistoryText()
 
         history_widget:SetText(history_text)
         history_widget:SetRelativeWidth(1)
-        history_widget:SetLabel("Last " .. self.db.profile.history.size .. " blocked messages")
+        history_widget:SetLabel("Last " .. self.db.profile.history.size .. " " .. L["blocked messages"])
         history_widget:SetFullHeight(true)
         history_widget:DisableButton(true)
         history_widget:SetNumLines(27)
@@ -1007,84 +1010,64 @@ end
 
 function AdBlock:AddToHistory(entry)
     if self.db.profile.history.enabled then
-        if entry.channel == 1 then entry.channel = "General" end
-        if entry.channel == 2 then entry.channel = "Trade" end
-        if entry.channel == 3 then entry.channel = "Defense" end
-        if entry.channel == "CHAT_MSG_SAY" then entry.channel = "Say" end
-        if entry.channel == "CHAT_MSG_YELL" then entry.channel = "Yell" end
-        if entry.channel == "CHAT_MSG_WHISPER" then entry.channel = "Whisper" end
+        if entry.channel == 1 then entry.channel = L["General"] end
+        if entry.channel == 2 then entry.channel = L["Trade"] end
+        if entry.channel == 3 then entry.channel = L["Defense"] end
+        if entry.channel == "CHAT_MSG_SAY" then entry.channel = L["Say"] end
+        if entry.channel == "CHAT_MSG_YELL" then entry.channel = L["Yell"] end
+        if entry.channel == "CHAT_MSG_WHISPER" then entry.channel = L["Whisper"] end
 
         table.insert(self.db.char.history, 1, entry)
         self.db.char.history[self.db.profile.history.size + 1] = nil
-        self:PrintDebug("Adding entry " .. AB.C(entry.hash, "teal") .. " in history log")
+        self:PrintDebug(L["Adding entry"] .. " " .. AB.C(entry.hash, "teal") .. " " .. L["in history log"])
     end
 end
 
 function AdBlock:PurgeHistory(info)
+    self:PrintINFO(L["History purged"])
     self.db.char.history = {}
 end
 
 function AdBlock:ShowTutorial(info)
     self.db.global.tutorial = false
     local frame = self.ui:Create("Frame")
-    frame:SetTitle("Welcome to AdBlock!")
-    frame:SetStatusText("AdBlock tutorial")
+    frame:SetTitle(L["Welcome to AdBlock!"])
+    frame:SetStatusText(L["AdBlock tutorial"])
     frame:SetCallback("OnClose", function(widget) AdBlock.ui:Release(widget) end)
     frame:SetLayout("List")
 
     local intro = self.ui:Create("Label")
-    intro:SetText([[
-World of Warcraft is turning like the rest of the internet, full of Boosting messages in chat, whispers, LFG tool, etc. As Blizzard is not doing anything about it, let's filter the clutter ourselves!
-        
-        ]])
+    intro:SetText(L["World of Warcraft is turning like the rest of the internet, full of Boosting messages in chat, whispers, LFG tool, etc. As Blizzard is not doing anything about it, let's filter the clutter ourselves!"] .. "\n\n")
     intro:SetRelativeWidth(1)
     intro:SetFont("Fonts\\FRIZQT__.TTF", 12)
 
     frame:AddChild(intro)
     local features_header = self.ui:Create("Label")
-    features_header:SetText("Current features:\n")
+    features_header:SetText(L["Current features:"] .. "\n")
     features_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
 
     features_header:SetRelativeWidth(1)
     frame:AddChild(features_header)
     local features = self.ui:Create("Label")
-    features:SetText([[
-    * Block Spam: Automatically block messages sent more than once from the same user within defined timeframe (default to 5 min) in General Chat/Trade/Say/Yell/Whisper
-    * Block Ads aka Proactive mode: Aggressively blocks obvious boosting messages from the first occurence
-    * Blacklist users to be permanently filtered out of your chat
-    * Whitelist users to always be allowed (automatically done for friends and guildies)
-    * Audit mode: Try out AdBlock to see what it would block without actually blocking anything
-    * Autoblock mode: adds to the permanent blocklist repeating offenders
-    * Show how many messages were blocked this session/overall
-        
-        ]])
+    features:SetText("   * " .. L["Block Spam: Automatically block messages sent more than once from the same user within defined timeframe (default to 5 min) in General Chat/Trade/Say/Yell/Whisper"] .. "\n   * " .. L["Block Ads aka Proactive mode: Aggressively blocks obvious boosting messages from the first occurence"] .. "\n   * " .. L["Blacklist users to be permanently filtered out of your chat"] .. "\n   * " .. L["Whitelist users to always be allowed (automatically done for friends and guildies)"] .. "\n   * " .. L["Audit mode: Try out AdBlock to see what it would block without actually blocking anything"] .. "\n   * " .. L["Autoblock mode: adds to the permanent blocklist repeating offenders"] .. "\n   * " .. L["Show how many messages were blocked this session/overall"])
     features:SetFont("Fonts\\FRIZQT__.TTF", 12)
     features:SetRelativeWidth(1)
     frame:AddChild(features)
 
     local usage_header = self.ui:Create("Label")
-    usage_header:SetText("Recommended usage:\n")
+    usage_header:SetText(L["Recommended usage:"] .. "\n")
     usage_header:SetFont("Fonts\\FRIZQT__.TTF", 14, THICKOUTLINE)
     usage_header:SetRelativeWidth(1)
     frame:AddChild(usage_header)
     local usage = self.ui:Create("Label")
-    usage:SetText([[
-    * Type in /s "adblock:test" to make sure the addon works
-    * Type /ab  or click on the button below and start fine-tuning the AdBlock to your taste
-    * If you're a bit scared of blocking important stuff: 
-        * Activate "Audit" to make sure it would not block messages you would like to keep
-        * Later, remove Audit and switch to Verbose to see when messages are being blocked 
-        * You can see blocked message history at any time in the settings or via /ab history show
-    * Finally, you can activate Auto-Blacklist to permanently mute players that repeatedly trigger Adblock
-    
-    ]])
+    usage:SetText("   * " .. L["Type in /s \"adblock:test\" to make sure the addon works"] .. "\n   * " .. L["Type /ab  or click on the button below and start fine-tuning the AdBlock to your taste"] .. "\n   * " .. L["If you're a bit scared of blocking important stuff:"] .. "\n     * " .. L["Activate \"Audit\" to make sure it would not block messages you would like to keep"] .. "\n     * " .. L["Later, remove Audit and switch to Verbose to see when messages are being blocked"] .. "\n     * " .. L["You can see blocked message history at any time in the settings or via /ab history show"] .. "\n   * " .. L["Finally, you can activate Auto-Blacklist to permanently mute players that repeatedly trigger Adblock"] .. "\n\n")
     usage:SetFont("Fonts\\FRIZQT__.TTF", 12)
 
     usage:SetRelativeWidth(1)
     frame:AddChild(usage)
 
     local button = self.ui:Create("Button")
-    button:SetText("Ok, show me the options!")
+    button:SetText(L["Ok, show me the options!"])
     button:SetRelativeWidth(1)
     button:SetCallback("OnClick", function()  InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); InterfaceOptionsFrame_OpenToCategory(self.optionsFrame); AdBlock.ui:Release(frame)  end)
     frame:AddChild(button)
@@ -1189,13 +1172,13 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
     -- user is part of blacklist and is automatically blocked
     if self.db.profile.blacklist[player] then
         if self.db.profile.audit then
-            self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Blacklisted")
+            self:PrintAudit(L["I would have blocked message from"] .. " " .. AB.C(player, "teal") .. " " .. L["for reason:"] .. " " .. L["Blacklisted"])
             return false
         else
-            self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Blacklisted")
+            self:PrintInfo(L["Blocked message from"] .. " " .. AB.C(player, "teal") .. " " .. L["for reason:"] .. " " .. L["Blacklisted"])
             self:PrintDebug(AB.C(msg, "grey"))
             self.db.profile.session_counter = self.db.profile.session_counter + 1
-            self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Blacklisted", channel = (channelID or event)})
+            self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = L["Blacklisted"], channel = (channelID or event)})
             AB.blocked_lineID = lineID
             return true
         end
@@ -1214,18 +1197,18 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
     if self.db.profile.antispam.enabled then 
         local old_tick = self.db.profile.antispam.last_seen[hash]
         if old_tick then 
-            self:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " .. AB.C(old_tick, "teal"))
+            self:PrintDebug("Hash=" .. AB.C(hash, "teal") .. " " .. "currTick=" .. AB.C(curr_tick, "teal") .. " " .. "prevTick=" .. AB.C(old_tick, "teal"))
             if (curr_tick - old_tick <= self.db.profile.antispam.threshold) then -- duplicate message in the "threshold" time window
                 if self.db.profile.audit then
-                    self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Spamming")
+                    self:PrintAudit(L["I would have blocked message from"] .." " .. AB.C(player, "teal") .. " " .. L["for reason:"] .. " " .. L["Spamming"])
                     return false
                 else
-                    self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Spamming")
+                    self:PrintInfo(L["Blocked message from"] .. " " .. AB.C(player, "teal") .. " " .. L["for reason:"] .. " " .. L["Spamming"])
                     self.db.profile.antispam.last_seen[hash] = curr_tick -- updading last_seen so the threshold is a rolling time window
                     self:AddStrikes(player)
                     self.db.profile.session_counter = self.db.profile.session_counter + 1
                     self:PrintDebug(AB.C(msg, "grey"))
-                    self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Spamming", channel = (channelID or event)})
+                    self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = L["Spamming"], channel = (channelID or event)})
                     AB.blocked_lineID = lineID
                     return true
                 end
@@ -1234,7 +1217,7 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
                 if self.db.profile.strikelist[player] then self.db.profile.strikelist[player] = 0 end -- reseting counter for well-behaved players
             end
         else
-            self:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " ..  AB.C("First time", "pink"))
+            self:PrintDebug("Hash=" .. AB.C(hash, "teal") .. " " .. "currTick=" .. AB.C(curr_tick, "teal") .. " " .. "prevTick=" .. AB.C("First time", "pink"))
             self.db.profile.antispam.last_seen[hash] = curr_tick       
         end
     end
@@ -1250,13 +1233,13 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
         local is_ad, match = self:Heuristics(cleaned_msg)
         if is_ad then
             if self.db.profile.audit then
-                self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
+                self:PrintAudit(L["I would have blocked message from"] .. " " .. AB.C(player, "teal") .. L["for reason:"] .. " " .. L["Advertising"] .. " (" .. L["Keywords:"] .. " " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
                 return false
             else
-                self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
+                self:PrintInfo(L["Blocked message from"] .. " " .. AB.C(player, "teal") .. " " .. L["for reason:"] .. " " .. L["Advertising"] .. " (" ..L["Keywords:"] .. " " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
                 self:AddStrikes(player)
                 self.db.profile.session_counter = self.db.profile.session_counter + 1
-                self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Advertising", channel = (channelID or event)})
+                self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = L["Advertising"], channel = (channelID or event)})
                 AB.blocked_lineID = lineID
                 return true
             end
