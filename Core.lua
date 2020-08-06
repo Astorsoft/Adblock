@@ -527,9 +527,6 @@ function AdBlock:OnEnable()
     end
 end
 
-function AdBlock:ChatFilterLogic(...)
-    return AB.ChatFilterLogic(...)
-end
 
 function AdBlock:OnDisable()
     -- Called when the addon is disabled
@@ -903,55 +900,29 @@ function AdBlock:RemoveFromWhitelist(info, val)
     end
 end
 
-function AdBlock:PrintError(frame, text)
-    if text == nil then
-        text = frame
-        self:Print(AB.C("[ERROR] ", "red") .. text)
-    else
-        self:Print(frame, AB.C("[ERROR] ", "red") .. text)
-    end
+function AdBlock:PrintError(text)
+    self:Print(AB.C("[ERROR] ", "red") .. text)
 end
 
-function AdBlock:PrintWarning(frame, text)
-    if text == nil then
-        text = frame
-        self:Print(AB.C("[WARNING] ", "orange") .. text)
-    else
-        self:Print(frame, AB.C("[WARNING] ", "orange") .. text)
-    end
+function AdBlock:PrintWarning(text)
+    self:Print(AB.C("[WARNING] ", "orange") .. text)
 end
 
-function AdBlock:PrintInfo(frame, text)
+function AdBlock:PrintInfo(text)
     if self.db.profile.verbose then
-        if text == nil then
-            text = frame
-            self:Print(AB.C("[INFO] ", "grey") .. text)
-        else
-
-            self:Print(frame, AB.C("[INFO] ", "grey") .. text)
-        end
+        self:Print(AB.C("[INFO] ", "grey") .. text)
     end
 end
 
-function AdBlock:PrintAudit(frame, text)
+function AdBlock:PrintAudit(text)
     if self.db.profile.audit then
-        if text == nil then
-            text = frame
-            self:Print(AB.C("[AUDIT] ", "green") .. text)
-        else
-            self:Print(frame, AB.C("[AUDIT] ", "green") .. text)
-        end
+        self:Print(AB.C("[AUDIT] ", "green") .. text)
     end
 end
 
-function AdBlock:PrintDebug(frame, text)
+function AdBlock:PrintDebug(text)
     if self.db.profile.debug then
-        if text == nil then
-            text = frame
-            self:Print(AB.C("[DEBUG] ", "orange") .. text)
-        else
-            self:Print(frame, AB.C("[DEBUG] ", "orange") .. text)
-        end
+        self:Print(AB.C("[DEBUG] ", "orange") .. text)
     end
 end
 
@@ -1133,6 +1104,162 @@ function AdBlock:ChangeHistorySize(info, val)
     if prev_size > val then
         for i = val, prev_size do
             self.db.char.history[i] = nil
+        end
+    end
+end
+
+function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_player, author_status, channelID, channel_num, channel_name, arg1, lineID, guid, arg2, arg3, ...)
+    
+    AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
+
+    if IsEncounterInProgress() then -- Very unlikely you'll get spam in the middle of a raid fight, and let's keep our CPU for the mechanics
+        return false
+    end
+
+    -- Ignore messages coming from outside General (1) trade (2), defense (3) or say/yell/whispe (0)
+    if (channelID > 3) then 
+        return false
+    end
+
+
+    -- Ignore messages from channels the user specifically filtered out
+    if (channelID == 1 and not self.db.profile.scope.general) or (channelID == 3 and not self.db.profile.scope.trade) or (channelID == 1 and not self.db.profile.scope.defense) then
+        return false
+    end 
+
+    -- Ignore messages from say/yell/whisp if the user especially filtered them out
+    if (event == "CHAT_MSG_SAY" and not self.db.profile.scope.say) or (event == "CHAT_MSG_YELL" and not self.db.profile.scope.yell) or (event == "CHAT_MSG_WHISPER" and not self.db.profile.scope.whisp) then
+        return false
+    end
+
+    if #msg <= 10 then -- not counting very short message which can be casual smileys/reactions like "lol"
+        return false
+    end
+
+
+
+    -- Not filtering Raid members, party members, DEVS and Game Masters
+    if UnitInRaid(author) or UnitInParty(author) or author_status == "GM" or author_status == "DEV" then
+		return false
+	end
+
+
+    local player = AB.GetFullName(author)
+    -- user is part of whitelist and is automatically approved
+    if self.db.profile.whitelist[player] then 
+        self:PrintDebug("Ignoring message, player " .. AB.C(player, "teal") .. " is whitelisted")
+        return false
+    end
+
+    local date = date()
+    local hash = AB.stringHash(player .. ":" .. msg)
+
+        -- Test message
+    if msg:find("adblock:test") then
+        if self.db.profile.audit then
+            self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: " ..AB.C("Adblock Test String", "pink"))
+            return false
+        else
+            self:PrintInfo("Blocked message from " .. AB.C(author, "teal") .. " for reason: " .. AB.C("Adblock Test String", "pink"))
+            local debug_msg = AB.Highlight(msg, {"adblock:test"}, "grey")
+            self:PrintDebug(AB.C(debug_msg, "grey"))
+            self.db.profile.session_counter = self.db.profile.session_counter + 1
+            self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Test", channel = (channelID or event)})
+            if author == current_player then -- test message send by yourself
+                PlaySoundFile(AB.success_sounds[math.random(#AB.success_sounds)], "Master")
+            end
+            AB.blocked_lineID = lineID
+            return true
+        end
+    end
+
+    -- special case for BnetFriends not showing up in the friendlist
+    local _, bnet_friend = BNGetGameAccountInfoByGUID(guid) 
+    if bnet_friend then
+        return false
+    end
+
+    -- friends and guildies are automatically approved as well
+    if self.db.char.pals[player] then 
+        self:PrintDebug("Ignoring message, player " .. AB.C(player, "teal") .. " is " .. self.db.char.pals[player].origin)
+        return false
+    end
+
+
+    -- user is part of blacklist and is automatically blocked
+    if self.db.profile.blacklist[player] then
+        if self.db.profile.audit then
+            self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Blacklisted")
+            return false
+        else
+            self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Blacklisted")
+            self:PrintDebug(AB.C(msg, "grey"))
+            self.db.profile.session_counter = self.db.profile.session_counter + 1
+            self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Blacklisted", channel = (channelID or event)})
+            AB.blocked_lineID = lineID
+            return true
+        end
+    end
+    
+
+
+    -- now managing the heavy duty cases
+    
+    --local hours, minutes = GetGameTime()
+    --local month, day, year = select(2, C_DateAndTime.CalendarGetDate()) -- ignoring weekday
+    
+
+    local curr_tick = AB.round(GetTime())
+
+    if self.db.profile.antispam.enabled then 
+        local old_tick = self.db.profile.antispam.last_seen[hash]
+        if old_tick then 
+            self:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " .. AB.C(old_tick, "teal"))
+            if (curr_tick - old_tick <= self.db.profile.antispam.threshold) then -- duplicate message in the "threshold" time window
+                if self.db.profile.audit then
+                    self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Spamming")
+                    return false
+                else
+                    self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Spamming")
+                    self.db.profile.antispam.last_seen[hash] = curr_tick -- updading last_seen so the threshold is a rolling time window
+                    self:AddStrikes(player)
+                    self.db.profile.session_counter = self.db.profile.session_counter + 1
+                    self:PrintDebug(AB.C(msg, "grey"))
+                    self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Spamming", channel = (channelID or event)})
+                    AB.blocked_lineID = lineID
+                    return true
+                end
+            else
+                self.db.profile.antispam.last_seen[hash] = curr_tick
+                if self.db.profile.strikelist[player] then self.db.profile.strikelist[player] = 0 end -- reseting counter for well-behaved players
+            end
+        else
+            self:PrintDebug("Hash: " .. AB.C(hash, "teal") .. " currTick = " .. AB.C(curr_tick, "teal") .. "prevTick = " ..  AB.C("First time", "pink"))
+            self.db.profile.antispam.last_seen[hash] = curr_tick       
+        end
+    end
+    
+    
+    -- if message contains obvious selling advertisement it will be automatically blocked regardless of it had been seen or not before
+    if self.db.profile.proactive.enabled then -- AdBlock Heuristic part
+        cleaned_msg = string.lower(msg)
+        cleaned_msg = string.gsub(cleaned_msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
+        for k,v in next, AB.homographs do -- canonizing message
+            cleaned_msg = string.gsub(cleaned_msg, k, v)
+        end
+        local is_ad, match = self:Heuristics(cleaned_msg)
+        if is_ad then
+            if self.db.profile.audit then
+                self:PrintAudit("I would have blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
+                return false
+            else
+                self:PrintInfo("Blocked message from " .. AB.C(player, "teal") .. " for reason: Advertising (keywords: " .. AB.C(match.action, "yellow") .. ", " .. AB.C(match.object, "orange") .. ")")
+                self:AddStrikes(player)
+                self.db.profile.session_counter = self.db.profile.session_counter + 1
+                self:AddToHistory({ hash = hash, msg = msg, author = player, last_seen = date, reason = "Advertising", channel = (channelID or event)})
+                AB.blocked_lineID = lineID
+                return true
+            end
         end
     end
 end
