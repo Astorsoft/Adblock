@@ -1,6 +1,6 @@
 AdBlock = LibStub("AceAddon-3.0"):NewAddon("AdBlock", "AceConsole-3.0",  "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("AdBlock")
 local AB = select(2, ...)
-
 AB.last_lineID = 0 -- used to track chat line IDs being processed by the filter
 
 local options = {
@@ -9,7 +9,7 @@ local options = {
     type = 'group',
     args = {
         header = {
-            name = "AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!",
+            name = L["AdBlock allows you to block spam and advertisement messages from your chat. \n\nFiltering ads on the LFG tool is unfortunately not possible, but Blizzard do suspend those players so don't forget to report them!"],
             type = "description",
             image = "Interface\\AddOns\\AdBlock\\Textures\\Logo",
             imageWidth = 64,
@@ -27,16 +27,16 @@ local options = {
             func = "ShowHelp"
         },
         enable = {
-            name = "Enable Addon",
-            desc = "Enables/Disables the addon",
+            name = L["Enable Addon"],
+            desc = L["Enables/Disables the addon"],
             type = "toggle",
             order = 1,
             set = "ToggleAddon",
             get = function(info) return AdBlock.db.profile.enabled end
         },
         minimap = {
-            name = "Show Minimap Button",
-            desc = "Toggle minimap button visibility",
+            name = L["Show Minimap Button"],
+            desc = L["Toggle minimap button visibility"],
             type = "toggle",
             order = 2,
             set = "ToggleMinimapButton",
@@ -48,45 +48,45 @@ local options = {
             order = 3
         },
         stats = {
-            name = "Blocking Stats",
-            desc = "Show how many ads or spam were blocked thanks to AdBlock",
+            name = L["Blocking Stats"],
+            desc = L["Show how many ads or spam were blocked thanks to AdBlock"],
             type = "execute",
             order = 4,
             func = "GetStats",
         },
         tutorial = {
-            name = "Tutorial",
-            desc = "Show the introduction message once more",
+            name = L["Tutorial"],
+            desc = L["Show the introduction message once more"],
             type = "execute",
             order = 4,
             func = "ShowTutorial",
         },
         autoblock = {
-            name = "Auto-Blacklist",
-            desc = "Automatically blacklist repeated offenders",
+            name = L["Auto-Blacklist"],
+            desc = L["Automatically blacklist repeated offenders"],
             type = "toggle",
             order = 12,
             set = function(info, val) AdBlock:ToggleMode(info, val, "autoblock") end,
             get = function(info) return AdBlock.db.profile.autoblock end
         },
         Block_ads = {
-            name = "Block Ads",
-            desc = "Block detected ads using Adblock heuristics (while not in proactive, ads/spam are blocked at their second occurence)",
+            name = L["Block Ads"],
+            desc = L["Block detected ads using Adblock heuristics (while not in proactive, ads/spam are blocked at their second occurence)"],
             type = "toggle",
             order = 11,
             set = function(info, val) AdBlock:ToggleMode(info, val, "proactive") end,
             get = function(info) return AdBlock.db.profile.proactive.enabled end
         },
         block_spam = {
-            name = "Block Spam",
-            desc = "When enabled, block message sent more than once over a specific timeframe",
+            name = L["Block Spam"],
+            desc = L["When enabled, block message sent more than once over a specific timeframe"],
             type = "toggle",
             order = 10,
             set = function(info, val) AdBlock:ToggleMode(info, val, "antispam") end,
             get = function(info) return AdBlock.db.profile.antispam.enabled end
         },
         blacklist = {
-            name = "Blacklist",
+            name = L["Blacklist"],
             type = "group",
             order = 12,
             args = {
@@ -136,7 +136,7 @@ local options = {
             }
         },
         whitelist = {
-            name = "Whitelist",
+            name = L["Whitelist"],
             type = "group",
             order = 13,
             args = {
@@ -200,7 +200,7 @@ local options = {
             }
         },
         proactive = {
-            name = "Ad-blocking keywords",
+            name = L["Ad-blocking keywords"],
             type = "group",
             order = 14,
             args = {
@@ -245,7 +245,7 @@ local options = {
             
         },
         spam = {
-            name = "Anti-Spam",
+            name = L["Anti-Spam"],
             type = 'group',
             order = 15,
             args = {
@@ -272,7 +272,7 @@ local options = {
             }
         },
         history = {
-            name = "History",
+            name = L["History"],
             type = "group",
             order = 16,
             args = {
@@ -315,16 +315,16 @@ local options = {
             }
         },
         audit = {
-            name = "Audit Mode",
-            desc = "Announce what would have blocked and why without blocking anything. Useful for testing.",
+            name = L["Audit Mode"],
+            desc = L["Announce what would have blocked and why without blocking anything. Useful for testing."],
             type = "toggle",
             order = 16,
             set = function(info, val) AdBlock:ToggleMode(info, val, "audit") end,
             get = function(info) return AdBlock.db.profile.audit end
         },
         mayhem = {
-            name = "Mayhem",
-            desc = "Activate Mayhem mode (experimental), messing with spammers through whisps, please use it with caution (and fun!)",
+            name = L["Mayhem"],
+            desc = L["Activate Mayhem mode (experimental), messing with spammers through whisps, please use it with caution (and fun!)"],
             type = "toggle",
             order = 17,
             hidden = true,
@@ -333,16 +333,16 @@ local options = {
             get = function(info) return AdBlock.db.profile.mayhem end
         },
         verbose = {
-            name = "Verbose",
-            desc = "Print out infos such as when a message is blocked and why.",
+            name = L["Verbose"],
+            desc = L["Print out infos such as when a message is blocked and why."],
             type = "toggle",
             order = 15,
             set = function(info, val) AdBlock:ToggleMode(info, val, "verbose") end,
             get = function(info) return AdBlock.db.profile.verbose end
         },
         debug = {
-            name = "Debug",
-            desc = "Print out extra information. Only use for debugging purpose, this can be very noisy.",
+            name = L["Debug"],
+            desc = L["Print out extra information. Only use for debugging purpose, this can be very noisy."],
             type = "toggle",
             hidden = true,
             order = 40,
@@ -350,17 +350,17 @@ local options = {
             get = function(info) return AdBlock.db.profile.debug end
         },
         scope = {
-            name = "Filter the following channels:",
-            desc = "Which channels/message types to activate AdBlock on",
+            name = L["Filter the following channels:"],
+            desc = L["Which channels/message types to activate AdBlock on"],
             type = "multiselect",
             order = 40,
             values = {
-                general = "General chat (/1)",
-                trade = "Trade chat (/2)",
-                defense = "General Defense chat (/3)",
-                say = "Normal messages (/say)",
-                yell = "Yell messages (/yell)",
-                whisp = "Whispers (/w)"
+                general = L["General chat (/1)"],
+                trade = L["Trade chat (/2)"],
+                defense = L["General Defense chat (/3)"],
+                say = L["Normal messages (/say)"],
+                yell = L["Yell messages (/yell)"],
+                whisp = L["Whispers (/w)"]
             },
             set = "SetScope",
             get = "GetScope"
@@ -427,7 +427,7 @@ function AdBlock:OnInitialize()
     self:RegisterChatCommand("ab", "ChatCommand")
 
     -- TODO: Add DB cleaning
-    self:PrintInfo("Type /ab to access the config or /ab stats to see how many Ads and Spam Adblock spared you.")
+    self:PrintInfo(L["Type /ab to access the config or /ab stats to see how many Ads and Spam Adblock spared you."])
     if self.db.profile.mayhem or self.db.profile.debug then
         options.args.mayhem.hidden = false
     end
@@ -518,7 +518,7 @@ function AdBlock:OnEnable()
         ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", AB.ChatFilter)
         ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", AB.ChatFilter)
-        self:PrintInfo("Adblock is now enabled.")
+        self:PrintInfo(L["Adblock is now enabled."])
         if not self.db.profile.minimap.hide then
             self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo"
             self.icon:Refresh("AdBlock", ldb)
@@ -546,7 +546,7 @@ function AdBlock:OnDisable()
         self.ldb.icon = "Interface\\AddOns\\AdBlock\\Textures\\Logo-off"
         self.icon:Refresh("AdBlock", ldb)
     end
-    self:PrintInfo("Adblock is now disabled.")
+    self:PrintInfo(L["Adblock is now disabled."])
 end
 
 function AdBlock:ShowHelp()

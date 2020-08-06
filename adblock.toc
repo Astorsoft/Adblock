@@ -3,6 +3,7 @@
 ## Author: Astor
 ## Version: 0.9
 ## Notes: Let's get rid of spammers with WoW's Adblocker!
+## Notes-frFR: Supprime moi ce spam que je ne saurais voir!
 ## X-Category: Chat/Communication
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibDBIcon-1.0
@@ -10,9 +11,12 @@
 ## SavedVariables: AdblockDB
 
 embeds.xml
-
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+
+Locales\enUS.lua
+Locales\frFR.lua
 
 Core.lua
 
