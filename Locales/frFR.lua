@@ -108,7 +108,7 @@ L["Selling Action keywords"] = "Mots-clés actions"
 L["Keywords to detect as an intent to sell"] = "Mots-clés visant à détecter une intention de vendre quelque chose"
 L["Selling Object keywords"] = "Mots-clés objets"
 L["Keywords to detect as an object/service being sold"] = "Mots-clés visant à détecter le service/le bien en vente que l'on considère indésirable"
-L["Advance message cleaning"] = "Assainissement avancé"
+L["Advanced filtering"] = "Filtrage avancé"
 L["If this option is activated, AdBlock will perform some aggressive message cleaning, such as removing homograph and special characters before doing the keyword detection. While this can be very helpful to avoid classic keyword detection strategies from spammers, this can break keyword detection in non english language making heavy use of accents or non-latin alphabet. Try deactivating this options if your keywords are not matched as they should."] = "Si cette option est activée, AdBlock procèdera à un assainissement aggréssif du message avant de lancer la recherche de mots clés, cela supprimera les caractères accentués et les homographes du message (par exemple é et è deviendront e). Bien que ce genre de nettoyage permet de lutter contre les techniques de contournements du filtrage par les spammeurs, cela peut rendre la détection de certains mots impossible dans les langues avec des accents comme le français ou les langues en alphabet non latin comme le russe. Essayez de désactiver cette option si vos mots clés ne sont pas détectés comme ils le devraient."
 
 -- Anti Spam

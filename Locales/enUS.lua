@@ -102,7 +102,7 @@ L["Selling Action keywords"] = true
 L["Keywords to detect as an intent to sell"] = true
 L["Selling Object keywords"] = true
 L["Keywords to detect as an object/service being sold"] = true
-L["Advance message cleaning"] = true
+L["Advanced filtering"] = true
 L["If this option is activated, AdBlock will perform some aggressive message cleaning, such as removing homograph and special characters before doing the keyword detection. While this can be very helpful to avoid classic keyword detection strategies from spammers, this can break keyword detection in non english language making heavy use of accents or non-latin alphabet. Try deactivating this options if your keywords are not matched as they should."] = true
 
 -- Anti Spam
