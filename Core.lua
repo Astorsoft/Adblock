@@ -240,6 +240,14 @@ local options = {
                     set = "SetObjectKeywords",
                     pattern = "([^,]+)",
                     usage = "keyword1,keyword2,keyword3"
+                },
+                advanced_cleaning = {
+                    name = L["Advance message cleaning"],
+                    desc = L["If this option is activated, AdBlock will perform some aggressive message cleaning, such as removing homograph and special characters before doing the keyword detection. While this can be very helpful to avoid classic keyword detection strategies from spammers, this can break keyword detection in non english language making heavy use of accents or non-latin alphabet. Try deactivating this options if your keywords are not matched as they should."],
+                    order = 5,
+                    type = "toggle",
+                    set = function(info, val) AdBlock.db.profile.proactive.advanced_cleaning = val end,
+                    get = function(info) return AdBlock.db.profile.proactive.advanced_cleaning end
                 }
             }
             
@@ -358,6 +366,9 @@ local options = {
                 general = L["General chat (/1)"],
                 trade = L["Trade chat (/2)"],
                 defense = L["General Defense chat (/3)"],
+                lfg = L["LookingForGroup chat"],
+                world = L["WorldDefense chat"],
+                guild = L["GuildRecruitment chat"],
                 say = L["Normal messages (/say)"],
                 yell = L["Yell messages (/yell)"],
                 whisp = L["Whispers (/w)"]
@@ -379,7 +390,8 @@ local defaults = {
       proactive = {
           enabled = true,
           selling_actions = {"sell", "wts", "gallywix", "discount", "sylvanas", "oblivion", "nova", "community", "free", "price"},
-          selling_objects = {"boost", "m+", "mythic", "vision", "lvlup", "lvling", "levelup", "leveling", "aotc", " ce", "key", "curve", "cutting edge", "15+", "+15", "in time"}
+          selling_objects = {"boost", "m+", "mythic", "vision", "lvlup", "lvling", "levelup", "leveling", "aotc", " ce", "key", "curve", "cutting edge", "15+", "+15", "in time"},
+          advanced_cleaning = true
       },
       antispam = {
           enabled = true,
@@ -398,6 +410,9 @@ local defaults = {
         general = true,
         trade = true,
         defense = true,
+        lfg = true,
+        world = true,
+        guild = true,
         say = true,
         yell = true,
         whisp = false
@@ -1092,21 +1107,15 @@ function AdBlock:ChangeHistorySize(info, val)
 end
 
 function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_player, author_status, channelID, channel_num, channel_name, arg1, lineID, guid, arg2, arg3, ...)
-
     AB.last_lineID  = lineID -- todo: check for side effects with multiple chats
 
     if IsEncounterInProgress() then -- Very unlikely you'll get spam in the middle of a raid fight, and let's keep our CPU for the mechanics
         return false
     end
 
-    -- Ignore messages coming from outside General (1) trade (2), defense (3) or say/yell/whispe (0)
-    if (channelID > 3) then 
-        return false
-    end
-
-
     -- Ignore messages from channels the user specifically filtered out
-    if (channelID == 1 and not self.db.profile.scope.general) or (channelID == 3 and not self.db.profile.scope.trade) or (channelID == 1 and not self.db.profile.scope.defense) then
+    -- https://wow.tools/dbc/?dbc=chatchannels&build=1.13.5.35395#page=1 thanks Spaten
+    if (channelID == 1 and not self.db.profile.scope.general) or (channelID == 2 and not self.db.profile.scope.trade) or (channelID == 22 and not self.db.profile.scope.defense) or (channelID == 23 and not self.db.profile.scope.world) or (channelID == 24 and not self.db.profile.scope.lfg) or (channelID == 25 and not self.db.profile.scope.guild) then        
         return false
     end 
 
@@ -1227,9 +1236,12 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
     if self.db.profile.proactive.enabled then -- AdBlock Heuristic part
         cleaned_msg = string.lower(msg)
         cleaned_msg = string.gsub(cleaned_msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
-        --for k,v in next, AB.homographs do -- canonizing message
-        --    cleaned_msg = string.gsub(cleaned_msg, k, v)
-        --end
+        
+        if self.db.profile.proactive.advanced_cleaning then
+            for k,v in next, AB.homographs do -- canonizing message
+                cleaned_msg = string.gsub(cleaned_msg, k, v)
+            end
+        end
         local is_ad, match = self:Heuristics(cleaned_msg)
         if is_ad then
             if self.db.profile.audit then
