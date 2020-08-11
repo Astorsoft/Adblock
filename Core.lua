@@ -1227,9 +1227,9 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
     if self.db.profile.proactive.enabled then -- AdBlock Heuristic part
         cleaned_msg = string.lower(msg)
         cleaned_msg = string.gsub(cleaned_msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
-        for k,v in next, AB.homographs do -- canonizing message
-            cleaned_msg = string.gsub(cleaned_msg, k, v)
-        end
+        --for k,v in next, AB.homographs do -- canonizing message
+        --    cleaned_msg = string.gsub(cleaned_msg, k, v)
+        --end
         local is_ad, match = self:Heuristics(cleaned_msg)
         if is_ad then
             if self.db.profile.audit then
