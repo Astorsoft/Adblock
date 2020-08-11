@@ -1166,9 +1166,11 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
     end
 
     -- special case for BnetFriends not showing up in the friendlist
-    local _, bnet_friend = BNGetGameAccountInfoByGUID(guid) 
-    if bnet_friend then
-        return false
+    if event == "CHAT_MSG_WHISPER" then
+        local _, bnet_friend = BNGetGameAccountInfoByGUID(guid) 
+        if bnet_friend then
+            return false
+        end
     end
 
     -- friends and guildies are automatically approved as well
@@ -1237,6 +1239,9 @@ function AdBlock:ChatFilterLogic(event, msg, author, lang, channelName, current_
         cleaned_msg = string.lower(msg)
         cleaned_msg = string.gsub(cleaned_msg, "|c[^%[]+%[([^%]]+)%]|h|r", "%1") -- Speed up processing messages with links by removing them (credit to Funkydude)
         
+        for k,v in next, AB.symbols do -- removing junk
+            cleaned_msg = string.gsub(cleaned_msg, k, v)
+        end
         if self.db.profile.proactive.advanced_cleaning then
             for k,v in next, AB.homographs do -- canonizing message
                 cleaned_msg = string.gsub(cleaned_msg, k, v)
