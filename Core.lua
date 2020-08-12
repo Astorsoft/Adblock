@@ -1027,7 +1027,10 @@ function AdBlock:AddToHistory(entry)
     if self.db.profile.history.enabled then
         if entry.channel == 1 then entry.channel = L["General"] end
         if entry.channel == 2 then entry.channel = L["Trade"] end
-        if entry.channel == 3 then entry.channel = L["Defense"] end
+        if entry.channel == 22 then entry.channel = L["LocalDefense"] end
+        if entry.channel == 23 then entry.channel = L["WorldDefense"] end
+        if entry.channel == 24 then entry.channel = L["LookingForGroup"] end
+        if entry.channel == 25 then entry.channel = L["GuildRecruitment"] end
         if entry.channel == "CHAT_MSG_SAY" then entry.channel = L["Say"] end
         if entry.channel == "CHAT_MSG_YELL" then entry.channel = L["Yell"] end
         if entry.channel == "CHAT_MSG_WHISPER" then entry.channel = L["Whisper"] end
