@@ -1,7 +1,7 @@
-## Interface: 80300
+## Interface: 90001
 ## Title: Ad|cFFFF8000Block|r |TInterface\AddOns\AdBlock\Textures\Logo:24:24|t
 ## Author: Astor
-## Version: 1.1
+## Version: 1.2
 ## Notes: Let's get rid of spammers with WoW's Adblocker!
 ## Notes-frFR: Supprime moi ce spam que je ne saurais voir!
 ## X-Category: Chat/Communication
@@ -17,6 +17,7 @@ Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 Locales\enUS.lua
 Locales\frFR.lua
+Locales\ruRU.lua
 
 Core.lua
 
